@@ -2,4 +2,4 @@ ports:
   - port: 4000
 tasks:
   - init: yarn
-    command: yarn start
+    command: cp .env.gitpod .env && yarn debug
