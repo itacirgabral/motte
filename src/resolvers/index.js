@@ -5,11 +5,15 @@ const mkBooks = require('./query/mkBooks')
 const mkAddBook = require('./mutation/mkAddBook')
 const mkBookAdded = require('./subscription/mkBookAdded')
 
+const qrcode = require('../QRcode')
+const mkQrcode = require('./query/mkQrcode')
+
 const pubsub = new PubSub()
 
 const resolvers = {
   Query: {
-    books: mkBooks({ books })
+    books: mkBooks({ books }),
+    qrcode: mkQrcode({ qrcode })
   },
   Mutation: {
     addBook: mkAddBook({ books, pubsub })
