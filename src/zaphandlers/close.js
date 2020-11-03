@@ -3,6 +3,9 @@
  * on (event: 'close', listener: (err: {reason?: DisconnectReason | string, isReconnecting: boolean}) => void): this
  */
 
-const close = err => {}
+const close = err => {
+  console.log('event close')
+  console.dir(err)
+}
 
 module.exports = close

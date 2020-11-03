@@ -3,6 +3,8 @@
  * on (event: 'connecting', listener: () => void): this
  */
 
-const connecting = () => {}
+const connecting = () => {
+  console.log('event connecting')
+}
 
 module.exports = connecting
