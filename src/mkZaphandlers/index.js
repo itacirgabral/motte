@@ -1,0 +1,43 @@
+const mkChatNew = require('./mkChatNew.js')
+const mkConnectionPhoneChange = require('./mkConnectionPhoneChange.js')
+const mkGroupParticipantsDemote = require('./mkGroupParticipantsDemote.js')
+const mkMessageNew = require('./mkMessageNew.js')
+const mkQr = require('./mkQr.js')
+const mkChatUpdate = require('./mkChatUpdate.js')
+const mkCredentialsUpdated = require('./mkCredentialsUpdated.js')
+const mkGroupParticipantsPromote = require('./mkGroupParticipantsPromote.js')
+const mkMessageStatusUpdate = require('./mkMessageStatusUpdate.js')
+const mkUserPresenceUpdate = require('./mkUserPresenceUpdate.js')
+const mkClose = require('./mkClose.js')
+const mkGroupDescriptionUpdate = require('./mkGroupDescriptionUpdate.js')
+const mkGroupParticipantsRemove = require('./mkGroupParticipantsRemove.js')
+const mkMessageUpdate = require('./mkMessageUpdate.js')
+const mkUserStatusUpdate = require('./mkUserStatusUpdate.js')
+const mkConnecting = require('./mkConnecting.js')
+const mkGroupParticipantsAdd = require('./mkGroupParticipantsAdd.js')
+const mkGroupSettingsUpdate = require('./mkGroupSettingsUpdate.js')
+const mkOpen = require('./mkOpen.js')
+const mkWsClose = require('./mkWsClose.js')
+
+module.exports = ({ pubsub }) => ({
+  chatNew: mkChatNew({ pubsub }),
+  connectionPhoneChange: mkConnectionPhoneChange({ pubsub }),
+  groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub }),
+  messageNew: mkMessageNew({ pubsub }),
+  qr: mkQr({ pubsub }),
+  chatUpdate: mkChatUpdate({ pubsub }),
+  credentialsUpdated: mkCredentialsUpdated({ pubsub }),
+  groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub }),
+  messageStatusUpdate: mkMessageStatusUpdate({ pubsub }),
+  userPresenceUpdate: mkUserPresenceUpdate({ pubsub }),
+  close: mkClose({ pubsub }),
+  groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub }),
+  groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub }),
+  messageUpdate: mkMessageUpdate({ pubsub }),
+  userStatusUpdate: mkUserStatusUpdate({ pubsub }),
+  connecting: mkConnecting({ pubsub }),
+  groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub }),
+  groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub }),
+  open: mkOpen({ pubsub }),
+  wsClose: mkWsClose({ pubsub })
+})

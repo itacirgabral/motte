@@ -1,5 +1,6 @@
 const seals = {
-  newBook: 'newBook'
+  newBook: 'newBook',
+  credentialsUpdated: 'credentialsUpdated'
 }
 
 module.exports = seals

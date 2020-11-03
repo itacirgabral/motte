@@ -1,24 +1,20 @@
-const { WAConnection, MessageLogLevel } = require('@adiwajshing/baileys')
-const { ApolloServer } = require('apollo-server')
-const fs = require('fs')
-const path = require('path')
 
+const { ApolloServer, PubSub } = require('apollo-server')
+
+const zapladle = require('./zapladle')
 const typeDefs = require('./typeDefs')
-const resolvers = require('./resolvers')
-
-const server = new ApolloServer({ typeDefs, resolvers })
+const mkResolvers = require('./mkResolvers')
+const mkZaphandlers = require('./mkZaphandlers')
 
 const host = process.env.HOST_IP
 const port = process.env.HOST_PORT
-server.listen({ host, port }).then(() => console.log('🚀  Server ready'))
 
-const creds = fs.readFileSync(path.join(__dirname, '..', 'creds', 'main.json'))
+const pubsub = new PubSub()
+const resolvers = mkResolvers({ pubsub })
+const zaphandlers = mkZaphandlers({ pubsub })
 
-;(async () => {
-  const conn = new WAConnection()
-  conn.logLevel = MessageLogLevel.unhandled
-  conn.loadAuthInfo(creds)
-  conn.connectOptions.waitForChats = false
+const server = new ApolloServer({ typeDefs, resolvers })
+const baileys = zapladle(zaphandlers)
 
-  await conn.connect()
-})()
+server.listen({ host, port }).then(() => console.log('🤙  GraphQL ready'))
+baileys.then(() => console.log('📞  WhatsApp ready'))

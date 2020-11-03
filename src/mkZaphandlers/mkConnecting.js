@@ -3,7 +3,7 @@
  * on (event: 'connecting', listener: () => void): this
  */
 
-const connecting = () => {
+const connecting = ({ pubsub }) => () => {
   console.log('event connecting')
 }
 
