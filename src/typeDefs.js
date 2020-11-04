@@ -33,7 +33,26 @@ const typeDefs = gql`
 
   type Subscription {
     bookAdded: Book
+    chatNew: String
+    chatUpdate: String
+    close: String
+    connecting: String
+    connectionPhoneChange: String
     credentialsUpdated: String
+    groupDescriptionUpdate: String
+    groupParticipantsAdd: String
+    groupParticipantsDemote: String
+    groupParticipantsPromote: String
+    groupParticipantsRemove: String
+    groupSettingsUpdate: String
+    messageNew: String
+    messageStatusUpdate: String
+    messageUpdate: String
+    open: String
+    qr: String
+    userPresenceUpdate: String
+    userStatusUpdate: String
+    wsClose: String
   }
 `
 
