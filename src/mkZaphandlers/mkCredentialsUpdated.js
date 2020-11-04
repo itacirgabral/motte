@@ -16,7 +16,7 @@ const credentialsUpdated = ({ pubsub }) => auth => {
   })
 
   const pathname = path.join(__dirname, '..', '..', 'creds', 'main.json')
-  fs.writeFile(pathname, JSON.stringify(authInfo), () => {
+  fs.writeFile(pathname, authInfo, () => {
     console.log(`credentials stored at ${pathname}`)
     console.log(authInfo)
   })

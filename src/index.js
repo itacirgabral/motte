@@ -1,7 +1,7 @@
 
 const { ApolloServer, PubSub } = require('apollo-server')
 
-const zapladle = require('./zapladle')
+const zapfield = require('./zapfield')
 const typeDefs = require('./typeDefs')
 const mkResolvers = require('./mkResolvers')
 const mkZaphandlers = require('./mkZaphandlers')
@@ -14,7 +14,7 @@ const resolvers = mkResolvers({ pubsub })
 const zaphandlers = mkZaphandlers({ pubsub })
 
 const server = new ApolloServer({ typeDefs, resolvers })
-const baileys = zapladle(zaphandlers)
+const baileys = zapfield(zaphandlers)
 
 server.listen({ host, port }).then(() => console.log('🤙  GraphQL ready'))
 baileys.then(() => console.log('📞  WhatsApp ready'))

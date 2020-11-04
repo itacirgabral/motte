@@ -4,10 +4,14 @@ const path = require('path')
 
 let creds
 try {
-  creds = fs.readFileSync(path.join(__dirname, '..', 'creds', 'main.json'), 'utf8')
-} catch {}
+  const pathname = path.join(__dirname, '..', 'creds', 'main.json')
+  console.log(`trying get file ${pathname}`)
+  creds = fs.readFileSync(pathname, 'utf8')
+} catch {
+  console.log('Fail getting the file')
+}
 
-const zapladle = async ({
+const zapfield = async ({
   chatNew,
   chatUpdate,
   close,
@@ -34,7 +38,8 @@ const zapladle = async ({
   conn.connectOptions.waitForChats = false
 
   if (creds) {
-    conn.loadAuthInfo(JSON.parse(creds))
+    const authInfo = JSON.parse(creds)
+    conn.loadAuthInfo(authInfo)
   }
 
   conn.on('chat-new', chatNew)
@@ -61,13 +66,4 @@ const zapladle = async ({
   return conn.connect()
 }
 
-module.exports = zapladle
-
-  /**
-   *     if (!creds) {
-      const authInfo = conn.base64EncodedAuthInfo()
-      fs.writeFile(path.join(__dirname, '..', 'creds', 'main.json'), JSON.stringify(authInfo), () => {
-        console.log('creds main.json')
-      })
-    }
-  */
+module.exports = zapfield
