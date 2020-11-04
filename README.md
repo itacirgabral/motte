@@ -4,8 +4,9 @@
 ## WIP
 THIS IS **NOT** FOR PRODUCTION. Probably using it is illegal about WhatsApp® term of use policy.
 
-## Out of escope
+## Out of Escope
 - multuser, signup, signin
+- manager credentials, multistance/multinumber WhatsApp
 - send and receive files, audio, image
 - convert Bailey typescript types to gaphql types
 - schedule batch messages
