@@ -9,23 +9,23 @@
 - [x] zaphandler na subscription de credencial atualizada
 
 ## November 2
-- [ ] chatNew
-- [ ] connectionPhoneChange
-- [ ] groupParticipantsDemote
-- [ ] messageNew
-- [ ] qr
-- [ ] chatUpdate
 - [x] credentialsUpdated
-- [ ] groupParticipantsPromote
-- [ ] messageStatusUpdate
-- [ ] userPresenceUpdate
-- [ ] close
-- [ ] groupDescriptionUpdate
-- [ ] groupParticipantsRemove
-- [ ] messageUpdate
-- [ ] userStatusUpdate
-- [ ] connecting
-- [ ] groupParticipantsAdd
-- [ ] groupSettingsUpdate
-- [ ] open
-- [ ] wsClose
+- [x] qr
+- [x] close
+- [x] connectionPhoneChange
+- [x] connecting
+- [x] open
+- [x] wsClose
+- [x] userPresenceUpdate
+- [x] userStatusUpdate
+- [x] chatNew
+- [x] chatUpdate
+- [x] messageNew
+- [x] messageStatusUpdate
+- [x] messageUpdate
+- [x] groupParticipantsPromote
+- [x] groupParticipantsDemote
+- [x] groupDescriptionUpdate
+- [x] groupParticipantsRemove
+- [x] groupParticipantsAdd
+- [x] groupSettingsUpdate
