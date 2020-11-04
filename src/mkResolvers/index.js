@@ -6,6 +6,8 @@ const mkBookAdded = require('./subscription/mkBookAdded')
 const qrcode = require('../QRcode')
 const mkQrcode = require('./query/mkQrcode')
 
+const mkCredentialsUpdated = require('./subscription/mkCredentialsUpdated')
+
 const mkResolvers = ({ pubsub }) => ({
   Query: {
     books: mkBooks({ books }),
@@ -15,7 +17,8 @@ const mkResolvers = ({ pubsub }) => ({
     addBook: mkAddBook({ books, pubsub })
   },
   Subscription: {
-    bookAdded: mkBookAdded({ pubsub })
+    bookAdded: mkBookAdded({ pubsub }),
+    credentialsUpdated: mkCredentialsUpdated({ pubsub })
   }
 })
 

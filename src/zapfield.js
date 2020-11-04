@@ -34,7 +34,7 @@ const zapfield = async ({
   wsClose
 }) => {
   const conn = new WAConnection()
-  conn.logger.level = 'debug'
+  // conn.logger.level = 'debug'
   conn.connectOptions.waitForChats = false
 
   if (creds) {
