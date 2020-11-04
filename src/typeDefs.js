@@ -33,7 +33,7 @@ const typeDefs = gql`
 
   type Subscription {
     bookAdded: Book
-    credentialsUpdated: Credentials
+    credentialsUpdated: String
   }
 `
 

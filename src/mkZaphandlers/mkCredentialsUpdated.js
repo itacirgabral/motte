@@ -18,7 +18,7 @@ const credentialsUpdated = ({ pubsub }) => auth => {
 
   console.log('event credentials-updated')
   console.log(JSON.stringify(creds, null, 2))
-  pubsub.publish(seals.credentialsUpdated, { credentialsUpdated: creds })
+  pubsub.publish(seals.credentialsUpdated, { credentialsUpdated: JSON.stringify(creds) })
 
   const pathname = path.join(__dirname, '..', '..', 'creds', 'main.json')
   fs.writeFile(pathname, JSON.stringify(creds), () => {
