@@ -29,36 +29,39 @@ const mkGroupParticipantsPromote = require('./subscription/mkGroupParticipantsPr
 const mkGroupParticipantsRemove = require('./subscription/mkGroupParticipantsRemove')
 const mkGroupSettingsUpdate = require('./subscription/mkGroupSettingsUpdate')
 
-const mkResolvers = ({ pubsub }) => ({
+const mkContacts = require('./query/mkContacts')
+
+const mkResolvers = ({ pubsub, connP }) => ({
   Query: {
-    books: mkBooks({ books }),
-    qrcode: mkQrcode({ qrcode })
+    books: mkBooks({ books, pubsub, connP }),
+    qrcode: mkQrcode({ qrcode, pubsub, connP }),
+    contacts: mkContacts({ pubsub, connP })
   },
   Mutation: {
-    addBook: mkAddBook({ books, pubsub })
+    addBook: mkAddBook({ books, pubsub, connP })
   },
   Subscription: {
-    bookAdded: mkBookAdded({ pubsub }),
-    credentialsUpdated: mkCredentialsUpdated({ pubsub }),
-    close: mkClose({ pubsub }),
-    qr: mkQr({ pubsub }),
-    connecting: mkConnecting({ pubsub }),
-    connectionPhoneChange: mkConnectionPhoneChange({ pubsub }),
-    open: mkOpen({ pubsub }),
-    wsClose: mkWsClose({ pubsub }),
-    userPresenceUpdate: mkUserPresenceUpdate({ pubsub }),
-    userStatusUpdate: mkUserStatusUpdate({ pubsub }),
-    chatNew: mkChatNew({ pubsub }),
-    chatUpdate: mkChatUpdate({ pubsub }),
-    messageNew: mkMessageNew({ pubsub }),
-    messageStatusUpdate: mkMessageStatusUpdate({ pubsub }),
-    messageUpdate: mkMessageUpdate({ pubsub }),
-    groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub }),
-    groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub }),
-    groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub }),
-    groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub }),
-    groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub }),
-    groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub })
+    bookAdded: mkBookAdded({ pubsub, connP }),
+    credentialsUpdated: mkCredentialsUpdated({ pubsub, connP }),
+    close: mkClose({ pubsub, connP }),
+    qr: mkQr({ pubsub, connP }),
+    connecting: mkConnecting({ pubsub, connP }),
+    connectionPhoneChange: mkConnectionPhoneChange({ pubsub, connP }),
+    open: mkOpen({ pubsub, connP }),
+    wsClose: mkWsClose({ pubsub, connP }),
+    userPresenceUpdate: mkUserPresenceUpdate({ pubsub, connP }),
+    userStatusUpdate: mkUserStatusUpdate({ pubsub, connP }),
+    chatNew: mkChatNew({ pubsub, connP }),
+    chatUpdate: mkChatUpdate({ pubsub, connP }),
+    messageNew: mkMessageNew({ pubsub, connP }),
+    messageStatusUpdate: mkMessageStatusUpdate({ pubsub, connP }),
+    messageUpdate: mkMessageUpdate({ pubsub, connP }),
+    groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, connP }),
+    groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, connP }),
+    groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, connP }),
+    groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, connP }),
+    groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, connP }),
+    groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, connP })
   }
 })
 

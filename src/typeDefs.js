@@ -25,6 +25,7 @@ const typeDefs = gql`
   type Query {
     books: [Book]
     qrcode: String
+    contacts: [String]!
   }
 
   type Mutation {

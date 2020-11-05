@@ -34,8 +34,10 @@ const zapfield = async ({
   wsClose
 }) => {
   const conn = new WAConnection()
-  // conn.logger.level = 'debug'
-  conn.connectOptions.waitForChats = false
+  conn.logger.level = 'debug'
+
+  // https://github.com/adiwajshing/Baileys/issues/219
+  // conn.connectOptions.waitForChats = false
 
   if (creds) {
     const authInfo = JSON.parse(creds)
@@ -63,7 +65,9 @@ const zapfield = async ({
   conn.on('user-status-update', userStatusUpdate)
   conn.on('ws-close', wsClose)
 
-  return conn.connect()
+  await conn.connect()
+
+  return conn
 }
 
 module.exports = zapfield

@@ -29,3 +29,8 @@
 - [x] groupParticipantsRemove
 - [x] groupParticipantsAdd
 - [x] groupSettingsUpdate
+
+## november 3
+- [x] query contatos ()
+- [ ] ~~query chats/mensagens~~
+- [ ] mutation newMessage
