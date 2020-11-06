@@ -33,4 +33,4 @@
 ## november 3
 - [x] query contatos ()
 - [ ] ~~query chats/mensagens~~
-- [ ] mutation newMessage
+- [x] mutation newMessage

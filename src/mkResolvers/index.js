@@ -30,6 +30,7 @@ const mkGroupParticipantsRemove = require('./subscription/mkGroupParticipantsRem
 const mkGroupSettingsUpdate = require('./subscription/mkGroupSettingsUpdate')
 
 const mkContacts = require('./query/mkContacts')
+const mkSendMessage = require('./mutation/mkSendMessage')
 
 const mkResolvers = ({ pubsub, connP }) => ({
   Query: {
@@ -38,7 +39,8 @@ const mkResolvers = ({ pubsub, connP }) => ({
     contacts: mkContacts({ pubsub, connP })
   },
   Mutation: {
-    addBook: mkAddBook({ books, pubsub, connP })
+    addBook: mkAddBook({ books, pubsub, connP }),
+    sendMessage: mkSendMessage({ pubsub, connP })
   },
   Subscription: {
     bookAdded: mkBookAdded({ pubsub, connP }),
