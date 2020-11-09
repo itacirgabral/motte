@@ -62,6 +62,9 @@ const zapfield = async ({
 
   await conn.connect()
 
+  const contacts = Object.keys(conn.contacts).map(jid => jid.slice(0, jid.indexOf('@')))
+  await redis.sadd('contacts', ...contacts)
+
   return conn
 }
 
