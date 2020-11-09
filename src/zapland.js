@@ -1,37 +1,29 @@
 const { WAConnection } = require('@adiwajshing/baileys')
-const fs = require('fs')
-const path = require('path')
-
-let creds
-try {
-  const pathname = path.join(__dirname, '..', 'creds', 'main.json')
-  console.log(`trying get file ${pathname}`)
-  creds = fs.readFileSync(pathname, 'utf8')
-} catch {
-  console.log('Fail getting the file')
-}
 
 const zapfield = async ({
-  chatNew,
-  chatUpdate,
-  close,
-  connecting,
-  connectionPhoneChange,
-  credentialsUpdated,
-  groupDescriptionUpdate,
-  groupParticipantsAdd,
-  groupParticipantsDemote,
-  groupParticipantsPromote,
-  groupParticipantsRemove,
-  groupSettingsUpdate,
-  messageNew,
-  messageStatusUpdate,
-  messageUpdate,
-  open,
-  qr,
-  userPresenceUpdate,
-  userStatusUpdate,
-  wsClose
+  zaphandlers: {
+    chatNew,
+    chatUpdate,
+    close,
+    connecting,
+    connectionPhoneChange,
+    credentialsUpdated,
+    groupDescriptionUpdate,
+    groupParticipantsAdd,
+    groupParticipantsDemote,
+    groupParticipantsPromote,
+    groupParticipantsRemove,
+    groupSettingsUpdate,
+    messageNew,
+    messageStatusUpdate,
+    messageUpdate,
+    open,
+    qr,
+    userPresenceUpdate,
+    userStatusUpdate,
+    wsClose
+  },
+  redis
 }) => {
   const conn = new WAConnection()
   conn.logger.level = 'debug'
@@ -39,8 +31,11 @@ const zapfield = async ({
   // https://github.com/adiwajshing/Baileys/issues/219
   // conn.connectOptions.waitForChats = false
 
+  const creds = await redis.get('creds')
+
   if (creds) {
     const authInfo = JSON.parse(creds)
+    console.dir(authInfo)
     conn.loadAuthInfo(authInfo)
   }
 

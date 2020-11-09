@@ -1,13 +1,10 @@
-const fs = require('fs')
-const path = require('path')
-
 const seals = require('../seals')
 
 /**
  * when WA updates the credentials
  * on (event: 'credentials-updated', listener: (auth: AuthenticationCredentials) => void): this
  */
-const credentialsUpdated = ({ pubsub }) => auth => {
+const credentialsUpdated = ({ pubsub, redis }) => async (auth) => {
   const creds = {
     clientID: auth.clientID,
     serverToken: auth.serverToken,
@@ -16,14 +13,13 @@ const credentialsUpdated = ({ pubsub }) => auth => {
     macKey: auth.macKey.toString('base64')
   }
 
-  console.log('event credentials-updated')
-  console.log(JSON.stringify(creds, null, 2))
-  pubsub.publish(seals.credentialsUpdated, { credentialsUpdated: JSON.stringify(creds) })
+  const credentialsUpdated = JSON.stringify(creds)
 
-  const pathname = path.join(__dirname, '..', '..', 'creds', 'main.json')
-  fs.writeFile(pathname, JSON.stringify(creds), () => {
-    console.log(`credentials stored at ${pathname}`)
-  })
+  console.log('event credentials-updated')
+  console.log(credentialsUpdated)
+  pubsub.publish(seals.credentialsUpdated, { credentialsUpdated })
+
+  await redis.set('creds', credentialsUpdated)
 }
 
 module.exports = credentialsUpdated
