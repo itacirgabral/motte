@@ -9,4 +9,3 @@ THIS IS **NOT** FOR PRODUCTION. Probably using it is illegal about WhatsApp® te
 - manager credentials, multistance/multinumber WhatsApp
 - send and receive files, audio, image
 - convert Bailey typescript types to gaphql types
-- schedule batch messages
