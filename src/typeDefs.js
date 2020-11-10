@@ -30,7 +30,7 @@ const typeDefs = gql`
 
   type Mutation {
     addBook(title: String  author: String): Book
-    sendMessage(to: String text: String): String
+    sendTextMessage(to: String text: String): String
     sendQuotableMessage(to: String, text: String, quotedId: String, quotedMessage: String): String
   }
 

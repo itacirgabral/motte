@@ -2,7 +2,7 @@
 const { MessageType } = require('@adiwajshing/baileys')
 const isPendingP = require('../../isPendingP')
 
-const mkSendMessage = ({ pubsub, connP }) => async (parent, { to, text }, context, info) => {
+const mkSendTextMessage = ({ pubsub, connP }) => async (parent, { to, text }, context, info) => {
   const isPending = await isPendingP(connP)
 
   if (isPending) {
@@ -15,4 +15,4 @@ const mkSendMessage = ({ pubsub, connP }) => async (parent, { to, text }, contex
   }
 }
 
-module.exports = mkSendMessage
+module.exports = mkSendTextMessage
