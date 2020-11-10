@@ -1,4 +1,4 @@
-const { WAConnection, MessageType } = require('@adiwajshing/baileys')
+const { WAConnection } = require('@adiwajshing/baileys')
 
 const zapfield = async ({
   zaphandlers: {
