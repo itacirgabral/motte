@@ -12,4 +12,3 @@ const mkCreateContactList = ({ pubsub, connP, redis }) => async (parent, { conta
 }
 
 module.exports = mkCreateContactList
-
