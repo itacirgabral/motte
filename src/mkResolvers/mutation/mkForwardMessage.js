@@ -21,8 +21,7 @@ const mkForwardMessage = ({ pubsub, connP }) => async (parent, { to, fromMessage
       }
     }
 
-    const id = `${to}@g.us` // para grupos
-    const response = await conn.forwardMessage(id, message)
+    const response = await conn.forwardMessage(to, message)
     return JSON.stringify(response)
   }
 }

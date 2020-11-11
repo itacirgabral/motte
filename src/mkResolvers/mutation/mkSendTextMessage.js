@@ -9,8 +9,7 @@ const mkSendTextMessage = ({ pubsub, connP }) => async (parent, { to, text }, co
     return ''
   } else {
     const conn = await connP
-    const id = `${to}@s.whatsapp.net`
-    const message = await conn.sendMessage(id, text, MessageType.text)
+    const message = await conn.sendMessage(to, text, MessageType.text)
     return JSON.stringify(message)
   }
 }

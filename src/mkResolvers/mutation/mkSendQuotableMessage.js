@@ -18,8 +18,7 @@ const mkSendQuotableMessage = ({ pubsub, connP }) => async (parent, { to, text, 
         conversation: quotedMessage
       }
     }
-    const id = `${to}@s.whatsapp.net`
-    const response = await conn.sendMessage(id, text, MessageType.extendedText, { quoted: quotableMessage })
+    const response = await conn.sendMessage(to, text, MessageType.extendedText, { quoted: quotableMessage })
 
     return JSON.stringify(response)
   }

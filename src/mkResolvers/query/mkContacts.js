@@ -7,7 +7,7 @@ const mkContacts = ({ pubsub, connP }) => async (parent, args, context, info) =>
     return []
   } else {
     const conn = await connP
-    return Object.keys(conn.contacts).map(jid => jid.slice(0, jid.indexOf('@')))
+    return Object.keys(conn.contacts)
   }
 }
 
