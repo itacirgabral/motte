@@ -1,8 +1,3 @@
-const books = require('../books')
-const mkBooks = require('./query/mkBooks')
-const mkAddBook = require('./mutation/mkAddBook')
-const mkBookAdded = require('./subscription/mkBookAdded')
-
 const qrcode = require('../QRcode')
 const mkQrcode = require('./query/mkQrcode')
 
@@ -33,20 +28,19 @@ const mkContacts = require('./query/mkContacts')
 const mkSendTextMessage = require('./mutation/mkSendTextMessage')
 
 const mkSendQuotableMessage = require('./mutation/mkSendQuotableMessage')
+const mkForwardMessage = require('./mutation/mkForwardMessage')
 
 const mkResolvers = ({ pubsub, connP }) => ({
   Query: {
-    books: mkBooks({ books, pubsub, connP }),
     qrcode: mkQrcode({ qrcode, pubsub, connP }),
     contacts: mkContacts({ pubsub, connP })
   },
   Mutation: {
-    addBook: mkAddBook({ books, pubsub, connP }),
     sendTextMessage: mkSendTextMessage({ pubsub, connP }),
-    sendQuotableMessage: mkSendQuotableMessage({ pubsub, connP })
+    sendQuotableMessage: mkSendQuotableMessage({ pubsub, connP }),
+    forwardMessage: mkForwardMessage({ pubsub, connP })
   },
   Subscription: {
-    bookAdded: mkBookAdded({ pubsub, connP }),
     credentialsUpdated: mkCredentialsUpdated({ pubsub, connP }),
     close: mkClose({ pubsub, connP }),
     qr: mkQr({ pubsub, connP }),

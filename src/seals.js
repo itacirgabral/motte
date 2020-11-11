@@ -1,5 +1,4 @@
 const seals = {
-  newBook: 'newBook',
   chatNew: 'chatNew',
   connectionPhoneChange: 'connectionPhoneChange',
   groupParticipantsDemote: 'groupParticipantsDemote',
