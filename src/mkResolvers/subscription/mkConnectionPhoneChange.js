@@ -1,6 +1,6 @@
 const seals = require('../../seals')
 
-const mkConnectionPhoneChange = ({ pubsub }) => ({
+const mkConnectionPhoneChange = ({ pubsub, redis }) => ({
   subscribe: () => pubsub.asyncIterator([seals.connectionPhoneChange])
 })
 

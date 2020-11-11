@@ -2,7 +2,7 @@
 const { MessageType } = require('@adiwajshing/baileys')
 const isPendingP = require('../../isPendingP')
 
-const mkSendTextMessage = ({ pubsub, connP }) => async (parent, { to, text }, context, info) => {
+const mkSendTextMessage = ({ pubsub, connP, redis }) => async (parent, { to, text }, context, info) => {
   const isPending = await isPendingP(connP)
 
   if (isPending) {

@@ -10,6 +10,7 @@ const typeDefs = gql`
     sendTextMessage(to: String text: String): String
     sendQuotableMessage(to: String, text: String, quotedId: String, quotedMessage: String): String
     forwardMessage(to: String, fromMessageId: String, fromChatId: String, fromMessageText: String): String
+    createContactList(contacts: [String]): String
   }
 
   type Subscription {

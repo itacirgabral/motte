@@ -1,7 +1,7 @@
 
 const isPendingP = require('../../isPendingP')
 
-const mkForwardMessage = ({ pubsub, connP }) => async (parent, { to, fromMessageId, fromChatId, fromMessageText }, context, info) => {
+const mkForwardMessage = ({ pubsub, connP, redis }) => async (parent, { to, fromMessageId, fromChatId, fromMessageText }, context, info) => {
   const isPending = await isPendingP(connP)
 
   if (isPending) {

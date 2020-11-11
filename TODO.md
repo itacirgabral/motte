@@ -4,6 +4,8 @@
 - [x] credenciais salvar no redis
 - [x] contatos salvar no redis
 ## batch messages
-- [ ] schedule salvar no banco
+- [x] schedule salvar no banco
 - [ ] conpartilhar vs enviar nova
 - [ ] gerador com espera humanizado
+
+- [ ] query{ qrcode } last::redis

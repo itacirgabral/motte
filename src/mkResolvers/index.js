@@ -30,37 +30,40 @@ const mkSendTextMessage = require('./mutation/mkSendTextMessage')
 const mkSendQuotableMessage = require('./mutation/mkSendQuotableMessage')
 const mkForwardMessage = require('./mutation/mkForwardMessage')
 
-const mkResolvers = ({ pubsub, connP }) => ({
+const mkCreateContactList = require('./mutation/mkCreateContactList')
+
+const mkResolvers = ({ pubsub, connP, redis }) => ({
   Query: {
-    qrcode: mkQrcode({ qrcode, pubsub, connP }),
-    contacts: mkContacts({ pubsub, connP })
+    qrcode: mkQrcode({ qrcode, pubsub, connP, redis }),
+    contacts: mkContacts({ pubsub, connP, redis })
   },
   Mutation: {
-    sendTextMessage: mkSendTextMessage({ pubsub, connP }),
-    sendQuotableMessage: mkSendQuotableMessage({ pubsub, connP }),
-    forwardMessage: mkForwardMessage({ pubsub, connP })
+    sendTextMessage: mkSendTextMessage({ pubsub, connP, redis }),
+    sendQuotableMessage: mkSendQuotableMessage({ pubsub, connP, redis }),
+    forwardMessage: mkForwardMessage({ pubsub, connP, redis }),
+    createContactList: mkCreateContactList({ pubsub, connP, redis })
   },
   Subscription: {
-    credentialsUpdated: mkCredentialsUpdated({ pubsub, connP }),
-    close: mkClose({ pubsub, connP }),
-    qr: mkQr({ pubsub, connP }),
-    connecting: mkConnecting({ pubsub, connP }),
-    connectionPhoneChange: mkConnectionPhoneChange({ pubsub, connP }),
-    open: mkOpen({ pubsub, connP }),
-    wsClose: mkWsClose({ pubsub, connP }),
-    userPresenceUpdate: mkUserPresenceUpdate({ pubsub, connP }),
-    userStatusUpdate: mkUserStatusUpdate({ pubsub, connP }),
-    chatNew: mkChatNew({ pubsub, connP }),
-    chatUpdate: mkChatUpdate({ pubsub, connP }),
-    messageNew: mkMessageNew({ pubsub, connP }),
-    messageStatusUpdate: mkMessageStatusUpdate({ pubsub, connP }),
-    messageUpdate: mkMessageUpdate({ pubsub, connP }),
-    groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, connP }),
-    groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, connP }),
-    groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, connP }),
-    groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, connP }),
-    groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, connP }),
-    groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, connP })
+    credentialsUpdated: mkCredentialsUpdated({ pubsub, connP, redis }),
+    close: mkClose({ pubsub, connP, redis }),
+    qr: mkQr({ pubsub, connP, redis }),
+    connecting: mkConnecting({ pubsub, connP, redis }),
+    connectionPhoneChange: mkConnectionPhoneChange({ pubsub, connP, redis }),
+    open: mkOpen({ pubsub, connP, redis }),
+    wsClose: mkWsClose({ pubsub, connP, redis }),
+    userPresenceUpdate: mkUserPresenceUpdate({ pubsub, connP, redis }),
+    userStatusUpdate: mkUserStatusUpdate({ pubsub, connP, redis }),
+    chatNew: mkChatNew({ pubsub, connP, redis }),
+    chatUpdate: mkChatUpdate({ pubsub, connP, redis }),
+    messageNew: mkMessageNew({ pubsub, connP, redis }),
+    messageStatusUpdate: mkMessageStatusUpdate({ pubsub, connP, redis }),
+    messageUpdate: mkMessageUpdate({ pubsub, connP, redis }),
+    groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, connP, redis }),
+    groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, connP, redis }),
+    groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, connP, redis }),
+    groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, connP, redis }),
+    groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, connP, redis }),
+    groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, connP, redis })
   }
 })
 

@@ -1,6 +1,6 @@
 const isPendingP = require('../../isPendingP')
 
-const mkContacts = ({ pubsub, connP }) => async (parent, args, context, info) => {
+const mkContacts = ({ pubsub, connP, redis }) => async (parent, args, context, info) => {
   const isPending = await isPendingP(connP)
 
   if (isPending) {
