@@ -11,6 +11,7 @@ const typeDefs = gql`
     sendQuotableMessage(to: String, text: String, quotedId: String, quotedMessage: String): String
     forwardMessage(to: String, fromMessageId: String, fromChatId: String, fromMessageText: String): String
     createContactList(contacts: [String]): String
+    createBatchDelivery(text: String timestamp: String): String
   }
 
   type Subscription {

@@ -31,6 +31,7 @@ const mkSendQuotableMessage = require('./mutation/mkSendQuotableMessage')
 const mkForwardMessage = require('./mutation/mkForwardMessage')
 
 const mkCreateContactList = require('./mutation/mkCreateContactList')
+const mkCreateBatchDelivery = require('./mutation/mkCreateBatchDelivery')
 
 const mkResolvers = ({ pubsub, connP, redis }) => ({
   Query: {
@@ -41,7 +42,8 @@ const mkResolvers = ({ pubsub, connP, redis }) => ({
     sendTextMessage: mkSendTextMessage({ pubsub, connP, redis }),
     sendQuotableMessage: mkSendQuotableMessage({ pubsub, connP, redis }),
     forwardMessage: mkForwardMessage({ pubsub, connP, redis }),
-    createContactList: mkCreateContactList({ pubsub, connP, redis })
+    createContactList: mkCreateContactList({ pubsub, connP, redis }),
+    createBatchDelivery: mkCreateBatchDelivery({ pubsub, connP, redis })
   },
   Subscription: {
     credentialsUpdated: mkCredentialsUpdated({ pubsub, connP, redis }),
