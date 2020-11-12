@@ -32,6 +32,7 @@ const mkForwardMessage = require('./mutation/mkForwardMessage')
 
 const mkCreateContactList = require('./mutation/mkCreateContactList')
 const mkCreateBatchDelivery = require('./mutation/mkCreateBatchDelivery')
+const mkDispatchBatch = require('./subscription/mkDispatchBatch')
 
 const mkResolvers = ({ pubsub, connP, redis }) => ({
   Query: {
@@ -65,7 +66,8 @@ const mkResolvers = ({ pubsub, connP, redis }) => ({
     groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, connP, redis }),
     groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, connP, redis }),
     groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, connP, redis }),
-    groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, connP, redis })
+    groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, connP, redis }),
+    dispatchBatch: mkDispatchBatch({ pubsub, connP, redis })
   }
 })
 

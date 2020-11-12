@@ -1,6 +1,6 @@
 const seals = require('../../seals')
 
-const mkClose = ({ pubsub, redis }) => ({
+const mkClose = ({ pubsub, connP, redis }) => ({
   subscribe: () => pubsub.asyncIterator([seals.close])
 })
 

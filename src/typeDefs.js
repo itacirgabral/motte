@@ -35,6 +35,7 @@ const typeDefs = gql`
     userPresenceUpdate: String
     userStatusUpdate: String
     wsClose: String
+    dispatchBatch(to: String): String
   }
 `
 

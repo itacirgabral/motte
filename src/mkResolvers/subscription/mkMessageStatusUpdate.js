@@ -1,6 +1,6 @@
 const seals = require('../../seals')
 
-const mkMessageStatusUpdate = ({ pubsub, redis }) => ({
+const mkMessageStatusUpdate = ({ pubsub, connP, redis }) => ({
   subscribe: () => pubsub.asyncIterator([seals.messageStatusUpdate])
 })
 

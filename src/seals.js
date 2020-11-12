@@ -18,7 +18,8 @@ const seals = {
   groupParticipantsAdd: 'groupParticipantsAdd',
   groupSettingsUpdate: 'groupSettingsUpdate',
   open: 'open',
-  wsClose: 'wsClose'
+  wsClose: 'wsClose',
+  dispatchBatch: 'dispatchBatch'
 }
 
 module.exports = seals
