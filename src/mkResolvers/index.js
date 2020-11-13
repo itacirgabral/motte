@@ -30,7 +30,7 @@ const mkSendTextMessage = require('./mutation/mkSendTextMessage')
 const mkSendQuotableMessage = require('./mutation/mkSendQuotableMessage')
 const mkForwardMessage = require('./mutation/mkForwardMessage')
 
-const mkCreateContactList = require('./mutation/mkCreateContactList')
+const mkCreateContactBatch = require('./mutation/mkCreateContactBatch')
 const mkCreateBatchDelivery = require('./mutation/mkCreateBatchDelivery')
 const mkDispatchBatch = require('./subscription/mkDispatchBatch')
 
@@ -43,7 +43,7 @@ const mkResolvers = ({ pubsub, connP, redis }) => ({
     sendTextMessage: mkSendTextMessage({ pubsub, connP, redis }),
     sendQuotableMessage: mkSendQuotableMessage({ pubsub, connP, redis }),
     forwardMessage: mkForwardMessage({ pubsub, connP, redis }),
-    createContactList: mkCreateContactList({ pubsub, connP, redis }),
+    createContactBatch: mkCreateContactBatch({ pubsub, connP, redis }),
     createBatchDelivery: mkCreateBatchDelivery({ pubsub, connP, redis })
   },
   Subscription: {
