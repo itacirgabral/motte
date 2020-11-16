@@ -1,5 +1,5 @@
+const { MessageType, Presence } = require('@adiwajshing/baileys')
 const seals = require('../seals')
-const { MessageType } = require('@adiwajshing/baileys')
 
 /**
  * when a new message is relayed
@@ -20,7 +20,7 @@ const messageNew = ({ pubsub, redis, connP }) => async (message) => {
     const result = await pipeline.exec()
 
     if (to === result[1][1] && messageText === result[0][1]) {
-      const idx = String(Number(result[2][1]) - 2) // -(to + length)
+      const idx = String(Number(result[2][1]) - 2) // -to  -length
       const pipeline = redis.pipeline()
       pipeline.rpop('batchLast')// 0
       pipeline.rpoplpush('batchList', 'batchLast')// 1
@@ -29,9 +29,11 @@ const messageNew = ({ pubsub, redis, connP }) => async (message) => {
       const batchLast = result2[1][1]
 
       if (batchLast) {
+        const conn = await connP
+        conn.updatePresence(to, Presence.composing)
         setTimeout(async () => {
-          const conn = await connP
           conn.sendMessage(to, batchLast, MessageType.text)
+          conn.updatePresence(to, Presence.available)
           redis.hset('batchInfo', `timestamps:${Number(idx) + 1}:go`, Date.now())
         }, batchLast.lengtbatchLasth > 50 ? 1900 : batchLast.length * 20)
       }

@@ -6,7 +6,7 @@
 ## batch messages
 - [x] contactList
 - [x] batchDelivery
-- [ ] gerador com espera humanizado
+- [x] gerador com espera humanizado
 
 ## uTODO
 - [x] query{ qrcode } last::redis

@@ -1,4 +1,4 @@
-const { MessageType } = require('@adiwajshing/baileys')
+const { MessageType, Presence } = require('@adiwajshing/baileys')
 const isPendingP = require('../../isPendingP')
 const seals = require('../../seals')
 
@@ -32,8 +32,10 @@ const mkDispatchBatch = ({ pubsub, connP, redis }) => ({
       const batchLast = result[4][1]
 
       if (batchLast) {
+        conn.updatePresence(to, Presence.composing)
         setTimeout(async () => {
           conn.sendMessage(to, batchLast, MessageType.text)
+          conn.updatePresence(to, Presence.available)
           redis.hset('batchInfo', 'timestamps:0:go', Date.now())
         }, batchLast.lengtbatchLasth > 50 ? 1900 : batchLast.length * 20)
 
