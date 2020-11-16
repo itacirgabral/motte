@@ -12,8 +12,6 @@ const messageNew = ({ pubsub, redis, connP }) => async (message) => {
   pubsub.publish(seals.messageNew, { messageNew: JSON.stringify(message) })
 
   if (message.key.fromMe && message.message.extendedTextMessage) {
-    console.log('FROM ME')
-    console.log(JSON.stringify(message, null, 2))
     const to = message.key.remoteJid
     const messageText = message.message.extendedTextMessage.text
 
