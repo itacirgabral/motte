@@ -9,6 +9,7 @@ const qr = ({ pubsub, redis, connP }) => qr => {
   console.dir(qr)
 
   pubsub.publish(seals.qr, { qr })
+  redis.set('qrcodeLast', qr)
 }
 
 module.exports = qr

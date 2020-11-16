@@ -1,5 +1,4 @@
-const qrcode = require('../QRcode')
-const mkQrcode = require('./query/mkQrcode')
+const mkQrcodeLast = require('./query/mkQrcodeLast')
 
 const mkCredentialsUpdated = require('./subscription/mkCredentialsUpdated')
 const mkClose = require('./subscription/mkClose')
@@ -36,7 +35,7 @@ const mkDispatchBatch = require('./subscription/mkDispatchBatch')
 
 const mkResolvers = ({ pubsub, connP, redis }) => ({
   Query: {
-    qrcode: mkQrcode({ qrcode, pubsub, connP, redis }),
+    qrcodeLast: mkQrcodeLast({ pubsub, connP, redis }),
     contacts: mkContacts({ pubsub, connP, redis })
   },
   Mutation: {

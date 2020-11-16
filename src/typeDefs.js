@@ -2,7 +2,7 @@ const { gql } = require('apollo-server')
 
 const typeDefs = gql`
   type Query {
-    qrcode: String
+    qrcodeLast: String
     contacts: [String]!
   }
 
