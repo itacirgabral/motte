@@ -9,7 +9,11 @@ const messageNew = ({ pubsub, redis, connP }) => async (message) => {
   console.log('event message-new')
   console.dir(message)
 
-  if (message.key.fromMe) {
+  pubsub.publish(seals.messageNew, { messageNew: JSON.stringify(message) })
+
+  if (message.key.fromMe && message.message.extendedTextMessage) {
+    console.log('FROM ME')
+    console.log(JSON.stringify(message, null, 2))
     const to = message.key.remoteJid
     const messageText = message.message.extendedTextMessage.text
 
@@ -39,8 +43,6 @@ const messageNew = ({ pubsub, redis, connP }) => async (message) => {
       }
     }
   }
-
-  pubsub.publish(seals.messageNew, { messageNew: JSON.stringify(message) })
 }
 
 module.exports = messageNew
