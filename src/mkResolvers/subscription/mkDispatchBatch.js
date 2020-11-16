@@ -2,6 +2,8 @@ const { MessageType } = require('@adiwajshing/baileys')
 const isPendingP = require('../../isPendingP')
 const seals = require('../../seals')
 
+const emptyAsyncIterator = async function * emptyAsyncIterator () { }
+
 const mkDispatchBatch = ({ pubsub, connP, redis }) => ({
   subscribe: async (parent, { to }, context, info) => {
     const isPending = await isPendingP(connP)
@@ -12,41 +14,33 @@ const mkDispatchBatch = ({ pubsub, connP, redis }) => ({
       const conn = await connP
 
       const text = await redis.hget('batchDelivery', 'text')
-      const line = text.split('\n')
+      const lines = text.split('\n')
 
       const pipeline = redis.pipeline()
-      pipeline.del('batchList')
-      pipeline.del('batchLast')
-      pipeline.lpush('batchList', ...line)
-      await pipeline.exec()
 
-      // Don't throw the baby out with the bathwater
-      let batchLast = await redis.rpoplpush('batchList', 'batchLast')
+      // reset
+      pipeline.del('batchList')// 0
+      pipeline.del('batchLast')// 1
+      pipeline.del('batchInfo')// 2
 
-      const loop = () => {
-        if (batchLast) {
-          setTimeout(async () => {
-            await conn.sendMessage(to, batchLast, MessageType.text)
+      pipeline.lpush('batchList', ...lines)// 3
+      pipeline.rpoplpush('batchList', 'batchLast')// 4
+      pipeline.hset('batchInfo', 'to', to, 'length', lines.length)// 5
 
-            const obj = {
-              dispatchBatch: batchLast
-            }
-            pubsub.publish(seals.dispatchBatch, obj)
+      const result = await pipeline.exec()
 
-            const pipeline = redis.pipeline()
-            pipeline.rpop('batchLast')
-            pipeline.rpoplpush('batchList', 'batchLast')
+      const batchLast = result[4][1]
 
-            const result = await pipeline.exec()
-            batchLast = result[1][1]
+      if (batchLast) {
+        setTimeout(async () => {
+          conn.sendMessage(to, batchLast, MessageType.text)
+          redis.hset('batchInfo', 'timestamps:0:go', Date.now())
+        }, batchLast.lengtbatchLasth > 50 ? 1900 : batchLast.length * 20)
 
-            loop()
-          }, batchLast.lengtbatchLasth > 50 ? 1900 : batchLast.length * 20)
-        }
+        return pubsub.asyncIterator([seals.dispatchBatch])
+      } else {
+        return emptyAsyncIterator
       }
-      loop()
-
-      return pubsub.asyncIterator([seals.dispatchBatch])
     }
   }
 })
