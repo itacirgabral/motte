@@ -4,7 +4,7 @@ const seals = require('../seals')
  * when a new chat is added
  * on (event: 'chat-new', listener: (chat: WAChat) => void): this
  */
-const chatNew = ({ pubsub, redis }) => chat => {
+const chatNew = ({ pubsub, redis, connP }) => chat => {
   console.log('event chat-new')
   console.dir(chat)
 

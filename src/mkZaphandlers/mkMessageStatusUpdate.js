@@ -4,7 +4,7 @@ const seals = require('../seals')
  * when a message's status is updated (deleted, delivered, read, sent etc.)
  * on (event: 'message-status-update', listener: (message: WAMessageStatusUpdate) => void): this
  */
-const messageStatusUpdate = ({ pubsub, redis }) => message => {
+const messageStatusUpdate = ({ pubsub, redis, connP }) => message => {
   console.log('event message-status-update')
   console.dir(message)
 

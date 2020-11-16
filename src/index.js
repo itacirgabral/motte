@@ -14,8 +14,13 @@ const redisConn = process.env.REDIS_CONN
 const pubsub = new PubSub()
 const redis = new Redis(redisConn)
 
-const zaphandlers = mkZaphandlers({ pubsub, redis })
+let resolverConnPBox
+const connPBox = new Promise((resolve, reject) => {
+  resolverConnPBox = resolve
+})
+const zaphandlers = mkZaphandlers({ pubsub, redis, connP: connPBox })
 const connP = zapland({ zaphandlers, redis })
+resolverConnPBox(connP)
 
 const resolvers = mkResolvers({ pubsub, connP, redis })
 const server = new ApolloServer({ typeDefs, resolvers })

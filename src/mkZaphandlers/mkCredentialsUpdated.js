@@ -4,7 +4,7 @@ const seals = require('../seals')
  * when WA updates the credentials
  * on (event: 'credentials-updated', listener: (auth: AuthenticationCredentials) => void): this
  */
-const credentialsUpdated = ({ pubsub, redis }) => async (auth) => {
+const credentialsUpdated = ({ pubsub, redis, connP }) => async (auth) => {
   const creds = {
     clientID: auth.clientID,
     serverToken: auth.serverToken,

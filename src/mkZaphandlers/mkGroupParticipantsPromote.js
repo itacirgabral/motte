@@ -4,7 +4,7 @@ const seals = require('../seals')
  * when participants are promoted in a group
  * on (event: 'group-participants-promote', listener: (update: {jid: string, participants: string[], actor?: string}) => void): this
  */
-const groupParticipantsPromote = ({ pubsub, redis }) => update => {
+const groupParticipantsPromote = ({ pubsub, redis, connP }) => update => {
   console.log('event group-participants-promote')
   console.dir(update)
 

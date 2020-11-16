@@ -19,25 +19,25 @@ const mkGroupSettingsUpdate = require('./mkGroupSettingsUpdate.js')
 const mkOpen = require('./mkOpen.js')
 const mkWsClose = require('./mkWsClose.js')
 
-module.exports = ({ pubsub, redis }) => ({
-  chatNew: mkChatNew({ pubsub, redis }),
-  connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis }),
-  groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, redis }),
-  messageNew: mkMessageNew({ pubsub, redis }),
-  qr: mkQr({ pubsub, redis }),
-  chatUpdate: mkChatUpdate({ pubsub, redis }),
-  credentialsUpdated: mkCredentialsUpdated({ pubsub, redis }),
-  groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, redis }),
-  messageStatusUpdate: mkMessageStatusUpdate({ pubsub, redis }),
-  userPresenceUpdate: mkUserPresenceUpdate({ pubsub, redis }),
-  close: mkClose({ pubsub, redis }),
-  groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, redis }),
-  groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, redis }),
-  messageUpdate: mkMessageUpdate({ pubsub, redis }),
-  userStatusUpdate: mkUserStatusUpdate({ pubsub, redis }),
-  connecting: mkConnecting({ pubsub, redis }),
-  groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, redis }),
-  groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, redis }),
-  open: mkOpen({ pubsub, redis }),
-  wsClose: mkWsClose({ pubsub, redis })
+module.exports = ({ pubsub, redis, connP }) => ({
+  chatNew: mkChatNew({ pubsub, redis, connP }),
+  connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis, connP }),
+  groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, redis, connP }),
+  messageNew: mkMessageNew({ pubsub, redis, connP }),
+  qr: mkQr({ pubsub, redis, connP }),
+  chatUpdate: mkChatUpdate({ pubsub, redis, connP }),
+  credentialsUpdated: mkCredentialsUpdated({ pubsub, redis, connP }),
+  groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, redis, connP }),
+  messageStatusUpdate: mkMessageStatusUpdate({ pubsub, redis, connP }),
+  userPresenceUpdate: mkUserPresenceUpdate({ pubsub, redis, connP }),
+  close: mkClose({ pubsub, redis, connP }),
+  groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, redis, connP }),
+  groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, redis, connP }),
+  messageUpdate: mkMessageUpdate({ pubsub, redis, connP }),
+  userStatusUpdate: mkUserStatusUpdate({ pubsub, redis, connP }),
+  connecting: mkConnecting({ pubsub, redis, connP }),
+  groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, redis, connP }),
+  groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, redis, connP }),
+  open: mkOpen({ pubsub, redis, connP }),
+  wsClose: mkWsClose({ pubsub, redis, connP })
 })
