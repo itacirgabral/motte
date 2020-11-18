@@ -19,7 +19,11 @@ const credentialsUpdated = ({ pubsub, redis, connP }) => async (auth) => {
   console.log(credentialsUpdated)
   pubsub.publish(seals.credentialsUpdated, { credentialsUpdated })
 
-  await redis.set('creds', credentialsUpdated)
+  const pipeline = redis.pipeline()
+  pipeline.set('creds', credentialsUpdated)
+  pipeline.bgsave()
+
+  await pipeline.exec()
 }
 
 module.exports = credentialsUpdated
