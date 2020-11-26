@@ -26,6 +26,7 @@ const mkDispatchBatch = ({ pubsub, connP, redis }) => ({
       pipeline.lpush('batchList', ...lines)// 3
       pipeline.rpoplpush('batchList', 'batchLast')// 4
       pipeline.hset('batchInfo', 'to', to, 'length', lines.length)// 5
+      pipeline.hset('batchDelivery', 'status', 'doing')// 6
 
       const result = await pipeline.exec()
 
@@ -41,6 +42,7 @@ const mkDispatchBatch = ({ pubsub, connP, redis }) => ({
 
         return pubsub.asyncIterator([seals.dispatchBatch])
       } else {
+        redis.hset('batchDelivery', 'status', 'done')
         return emptyAsyncIterator
       }
     }

@@ -38,6 +38,8 @@ const messageNew = ({ pubsub, redis, connP }) => async (message) => {
           conn.updatePresence(to, Presence.available)
           redis.hset('batchInfo', `timestamps:${Number(idx) + 1}:go`, Date.now())
         }, batchLast.lengtbatchLasth > 50 ? 1900 : batchLast.length * 20)
+      } else {
+        await redis.hset('batchDelivery', 'status', 'done')
       }
     }
   }
