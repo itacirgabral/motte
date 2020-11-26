@@ -1,7 +1,11 @@
 # TODO
 
-## ~~November week 3~~
+## contatos
+- [ ] ao conectar, gerar os contatos a partir dos chats desconsiderando grupo
+- [ ] novo chat handler atualiza os contatos
+- [ ] atualizar contatos se alguém for (des)bloqueado
 
-> 1) um usuário manda uma mensagem para o bot
-> 2) o usuário responde esta mesma mensagem com `📷 messagename`
-> 3) dispatchBatch(`messagename`)
+## galeria de mensagens
+- [ ] responder 📸 salva referencia da mensagem
+- [ ] alterar batchDelivery para utilizar a salvada
+- [ ] encaminhamento humanizado
