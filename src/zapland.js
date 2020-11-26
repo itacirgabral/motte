@@ -29,7 +29,7 @@ const zapland = async ({
   conn.logger.level = 'debug'
 
   // https://github.com/adiwajshing/Baileys/issues/219
-  // conn.connectOptions.waitForChats = false
+  conn.connectOptions.waitForChats = true
 
   const creds = await redis.get('creds')
 
@@ -62,8 +62,12 @@ const zapland = async ({
 
   await conn.connect()
 
-  const contacts = Object.keys(conn.contacts)
-  await redis.sadd('contacts', ...contacts)
+  const contacts = conn.chats.array
+    .filter(({ jid = '' }) => jid.split('@s.whatsapp.net').length === 2)
+    .map(({ jid }) => jid)
+
+  console.log(`${contacts.length} contacts`)
+  await redis.sadd('contacts', contacts)
 
   return conn
 }
