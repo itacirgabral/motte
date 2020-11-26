@@ -1,6 +1,6 @@
 const { WAConnection } = require('@adiwajshing/baileys')
 
-const zapfield = async ({
+const zapland = async ({
   zaphandlers: {
     chatNew,
     chatUpdate,
@@ -68,4 +68,4 @@ const zapfield = async ({
   return conn
 }
 
-module.exports = zapfield
+module.exports = zapland
