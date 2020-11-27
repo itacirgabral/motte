@@ -8,8 +8,7 @@ const contactsReceived = ({ pubsub, redis, connP }) => async () => {
   console.log('event contacts-received')
   const conn = await connP
 
-  const length = conn.contacts.array.length
-  console.log(`${length} contacts`)
+  const length = Object.keys(conn.contacts).length
 
   pubsub.publish(seals.contactsReceived, { length })
 }

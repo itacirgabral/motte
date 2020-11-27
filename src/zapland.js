@@ -52,25 +52,13 @@ const zapland = async ({
   conn.on('group-participants-promote', groupParticipantsPromote)
   conn.on('group-participants-remove', groupParticipantsRemove)
   conn.on('group-settings-update', groupSettingsUpdate)
-  conn.on('message-new', messageNew)
   conn.on('message-status-update', messageStatusUpdate)
-  conn.on('message-update', messageUpdate)
   conn.on('open', open)
   conn.on('qr', qr)
-  conn.on('user-presence-update', userPresenceUpdate)
   conn.on('user-status-update', userStatusUpdate)
   conn.on('ws-close', wsClose)
 
   await conn.connect()
-
-  /*
-  const contacts = conn.chats.array
-    .filter(({ jid = '' }) => jid.split('@s.whatsapp.net').length === 2)
-    .map(({ jid }) => jid)
-
-  console.log(`${contacts.length} contacts`)
-  await redis.sadd('contacts', contacts)
-  */
 
   return conn
 }

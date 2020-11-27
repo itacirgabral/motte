@@ -3,17 +3,14 @@ const mkChatsReceived = require('./mkChatsReceived')
 const mkContactsReceived = require('./mkContactsReceived')
 const mkConnectionPhoneChange = require('./mkConnectionPhoneChange.js')
 const mkGroupParticipantsDemote = require('./mkGroupParticipantsDemote.js')
-const mkMessageNew = require('./mkMessageNew.js')
 const mkQr = require('./mkQr.js')
 const mkChatUpdate = require('./mkChatUpdate.js')
 const mkCredentialsUpdated = require('./mkCredentialsUpdated.js')
 const mkGroupParticipantsPromote = require('./mkGroupParticipantsPromote.js')
 const mkMessageStatusUpdate = require('./mkMessageStatusUpdate.js')
-const mkUserPresenceUpdate = require('./mkUserPresenceUpdate.js')
 const mkClose = require('./mkClose.js')
 const mkGroupDescriptionUpdate = require('./mkGroupDescriptionUpdate.js')
 const mkGroupParticipantsRemove = require('./mkGroupParticipantsRemove.js')
-const mkMessageUpdate = require('./mkMessageUpdate.js')
 const mkUserStatusUpdate = require('./mkUserStatusUpdate.js')
 const mkConnecting = require('./mkConnecting.js')
 const mkGroupParticipantsAdd = require('./mkGroupParticipantsAdd.js')
@@ -27,17 +24,14 @@ module.exports = ({ pubsub, redis, connP }) => ({
   connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis, connP }),
   contactsReceived: mkContactsReceived({ pubsub, redis, connP }),
   groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, redis, connP }),
-  messageNew: mkMessageNew({ pubsub, redis, connP }),
   qr: mkQr({ pubsub, redis, connP }),
   chatUpdate: mkChatUpdate({ pubsub, redis, connP }),
   credentialsUpdated: mkCredentialsUpdated({ pubsub, redis, connP }),
   groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, redis, connP }),
   messageStatusUpdate: mkMessageStatusUpdate({ pubsub, redis, connP }),
-  userPresenceUpdate: mkUserPresenceUpdate({ pubsub, redis, connP }),
   close: mkClose({ pubsub, redis, connP }),
   groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, redis, connP }),
   groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, redis, connP }),
-  messageUpdate: mkMessageUpdate({ pubsub, redis, connP }),
   userStatusUpdate: mkUserStatusUpdate({ pubsub, redis, connP }),
   connecting: mkConnecting({ pubsub, redis, connP }),
   groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, redis, connP }),
