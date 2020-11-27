@@ -2,8 +2,8 @@
 
 
 ## contatos
-- [ ] ao conectar, gerar os contatos a partir dos chats desconsiderando grupo
-- [ ] novo chat handler atualiza os contatos
+- [x] ao conectar, gerar os contatos a partir dos chats desconsiderando grupo
+- [x] novo chat handler atualiza os contatos
 - [ ] atualizar contatos se alguém for (des)bloqueado
 
 ## galeria de mensagens

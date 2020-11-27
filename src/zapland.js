@@ -3,9 +3,11 @@ const { WAConnection } = require('@adiwajshing/baileys')
 const zapland = async ({
   zaphandlers: {
     chatNew,
+    chatsReceived,
     chatUpdate,
     close,
     connecting,
+    contactsReceived,
     connectionPhoneChange,
     credentialsUpdated,
     groupDescriptionUpdate,
@@ -28,9 +30,6 @@ const zapland = async ({
   const conn = new WAConnection()
   conn.logger.level = 'debug'
 
-  // https://github.com/adiwajshing/Baileys/issues/219
-  conn.connectOptions.waitForChats = true
-
   const creds = await redis.get('creds')
 
   if (creds) {
@@ -40,9 +39,11 @@ const zapland = async ({
   }
 
   conn.on('chat-new', chatNew)
+  conn.on('chats-received', chatsReceived)
   conn.on('chat-update', chatUpdate)
   conn.on('close', close)
   conn.on('connecting', connecting)
+  conn.on('contacts-received', contactsReceived)
   conn.on('connection-phone-change', connectionPhoneChange)
   conn.on('credentials-updated', credentialsUpdated)
   conn.on('group-description-update', groupDescriptionUpdate)
@@ -62,12 +63,14 @@ const zapland = async ({
 
   await conn.connect()
 
+  /*
   const contacts = conn.chats.array
     .filter(({ jid = '' }) => jid.split('@s.whatsapp.net').length === 2)
     .map(({ jid }) => jid)
 
   console.log(`${contacts.length} contacts`)
   await redis.sadd('contacts', contacts)
+  */
 
   return conn
 }

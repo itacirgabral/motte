@@ -1,6 +1,7 @@
 const seals = {
   chatNew: 'chatNew',
   connectionPhoneChange: 'connectionPhoneChange',
+  contactsReceived: 'contactsReceived',
   groupParticipantsDemote: 'groupParticipantsDemote',
   messageNew: 'messageNew',
   qr: 'qr',

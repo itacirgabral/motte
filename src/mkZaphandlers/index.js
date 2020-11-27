@@ -1,4 +1,6 @@
 const mkChatNew = require('./mkChatNew.js')
+const mkChatsReceived = require('./mkChatsReceived')
+const mkContactsReceived = require('./mkContactsReceived')
 const mkConnectionPhoneChange = require('./mkConnectionPhoneChange.js')
 const mkGroupParticipantsDemote = require('./mkGroupParticipantsDemote.js')
 const mkMessageNew = require('./mkMessageNew.js')
@@ -21,7 +23,9 @@ const mkWsClose = require('./mkWsClose.js')
 
 module.exports = ({ pubsub, redis, connP }) => ({
   chatNew: mkChatNew({ pubsub, redis, connP }),
+  chatsReceived: mkChatsReceived({ pubsub, redis, connP }),
   connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis, connP }),
+  contactsReceived: mkContactsReceived({ pubsub, redis, connP }),
   groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, redis, connP }),
   messageNew: mkMessageNew({ pubsub, redis, connP }),
   qr: mkQr({ pubsub, redis, connP }),
