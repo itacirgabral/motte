@@ -10,8 +10,6 @@ const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {
   console.log('event chat-update')
   console.dir(chat)
 
-  console.log(JSON.stringify(chat, null, 2))
-
   if (
     Array.isArray(chat?.messages?.array) &&
     chat.messages.array.length === 1 &&
