@@ -48,7 +48,7 @@ const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {
     }
   }
 
-  pubsub.publish(seals.chatUpdate, { chatNew: JSON.stringify(chat) })
+  pubsub.publish(seals.chatUpdate, { chatUpdate: JSON.stringify(chat) })
 }
 
 module.exports = chatUpdate

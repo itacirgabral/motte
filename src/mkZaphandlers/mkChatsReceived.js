@@ -16,7 +16,7 @@ const chatsReceived = ({ pubsub, redis, connP }) => async ({ hasNewChats, hasRec
   console.log(`${length} contacts`)
   await redis.sadd('contacts', knoweds)
 
-  pubsub.publish(seals.chatsReceived, { length })
+  pubsub.publish(seals.chatsReceived, { chatsReceived: length })
 }
 
 module.exports = chatsReceived

@@ -7,7 +7,7 @@ const seals = require('../seals')
 const connecting = ({ pubsub, redis, connP }) => () => {
   console.log('event connecting')
 
-  pubsub.publish(seals.connecting, { credentialsUpdated: JSON.stringify(true) })
+  pubsub.publish(seals.connecting, { connecting: JSON.stringify(true) })
 }
 
 module.exports = connecting

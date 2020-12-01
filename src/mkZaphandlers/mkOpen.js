@@ -8,7 +8,7 @@ const open = ({ pubsub, redis, connP }) => result => {
   console.log('event open')
   console.dir(result)
 
-  pubsub.publish(seals.open, { credentialsUpdated: JSON.stringify(result) })
+  pubsub.publish(seals.open, { open: JSON.stringify(result) })
 }
 
 module.exports = open

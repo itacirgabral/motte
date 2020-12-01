@@ -10,7 +10,7 @@ const contactsReceived = ({ pubsub, redis, connP }) => async () => {
 
   const length = Object.keys(conn.contacts).length
 
-  pubsub.publish(seals.contactsReceived, { length })
+  pubsub.publish(seals.contactsReceived, { contactsReceived: length })
 }
 
 module.exports = contactsReceived
