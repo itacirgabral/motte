@@ -8,7 +8,6 @@ const seals = require('../seals')
  */
 const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {
   console.log('event chat-update')
-  console.dir(chat)
 
   if (
     Array.isArray(chat?.messages?.array) &&

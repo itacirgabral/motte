@@ -1,41 +1,39 @@
-const mkChatNew = require('./mkChatNew.js')
+const mkChatNew = require('./mkChatNew')
+const mkChatUpdate = require('./mkChatUpdate')
 const mkChatsReceived = require('./mkChatsReceived')
+const mkChatsUpdate = require('./mkChatsUpdate')
+const mkClose = require('./mkClose')
+const mkConnecting = require('./mkConnecting')
+const mkConnectionPhoneChange = require('./mkConnectionPhoneChange')
+const mkConnectionValidated = require('./mkConnectionValidated')
 const mkContactsReceived = require('./mkContactsReceived')
-const mkConnectionPhoneChange = require('./mkConnectionPhoneChange.js')
-const mkGroupParticipantsDemote = require('./mkGroupParticipantsDemote.js')
-const mkQr = require('./mkQr.js')
-const mkChatUpdate = require('./mkChatUpdate.js')
-const mkCredentialsUpdated = require('./mkCredentialsUpdated.js')
-const mkGroupParticipantsPromote = require('./mkGroupParticipantsPromote.js')
-const mkMessageStatusUpdate = require('./mkMessageStatusUpdate.js')
-const mkClose = require('./mkClose.js')
-const mkGroupDescriptionUpdate = require('./mkGroupDescriptionUpdate.js')
-const mkGroupParticipantsRemove = require('./mkGroupParticipantsRemove.js')
-const mkUserStatusUpdate = require('./mkUserStatusUpdate.js')
-const mkConnecting = require('./mkConnecting.js')
-const mkGroupParticipantsAdd = require('./mkGroupParticipantsAdd.js')
-const mkGroupSettingsUpdate = require('./mkGroupSettingsUpdate.js')
-const mkOpen = require('./mkOpen.js')
-const mkWsClose = require('./mkWsClose.js')
+const mkCredentialsUpdated = require('./mkCredentialsUpdated')
+const mkGroupParticipantsUpdate = require('./mkGroupParticipantsUpdate')
+const mkGroupUpdate = require('./mkGroupUpdate')
+const mkMessageStatusUpdate = require('./mkMessageStatusUpdate')
+const mkOpen = require('./mkOpen')
+const mkQr = require('./mkQr')
+const mkReceivedPong = require('./mkReceivedPong')
+const mkUserStatusUpdate = require('./mkUserStatusUpdate')
+const mkWsClose = require('./mkWsClose')
 
 module.exports = ({ pubsub, redis, connP }) => ({
   chatNew: mkChatNew({ pubsub, redis, connP }),
-  chatsReceived: mkChatsReceived({ pubsub, redis, connP }),
-  connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis, connP }),
-  contactsReceived: mkContactsReceived({ pubsub, redis, connP }),
-  groupParticipantsDemote: mkGroupParticipantsDemote({ pubsub, redis, connP }),
-  qr: mkQr({ pubsub, redis, connP }),
   chatUpdate: mkChatUpdate({ pubsub, redis, connP }),
-  credentialsUpdated: mkCredentialsUpdated({ pubsub, redis, connP }),
-  groupParticipantsPromote: mkGroupParticipantsPromote({ pubsub, redis, connP }),
-  messageStatusUpdate: mkMessageStatusUpdate({ pubsub, redis, connP }),
+  chatsReceived: mkChatsReceived({ pubsub, redis, connP }),
+  chatsUpdate: mkChatsUpdate({ pubsub, redis, connP }),
   close: mkClose({ pubsub, redis, connP }),
-  groupDescriptionUpdate: mkGroupDescriptionUpdate({ pubsub, redis, connP }),
-  groupParticipantsRemove: mkGroupParticipantsRemove({ pubsub, redis, connP }),
-  userStatusUpdate: mkUserStatusUpdate({ pubsub, redis, connP }),
   connecting: mkConnecting({ pubsub, redis, connP }),
-  groupParticipantsAdd: mkGroupParticipantsAdd({ pubsub, redis, connP }),
-  groupSettingsUpdate: mkGroupSettingsUpdate({ pubsub, redis, connP }),
+  connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis, connP }),
+  connectionValidated: mkConnectionValidated({ pubsub, redis, connP }),
+  contactsReceived: mkContactsReceived({ pubsub, redis, connP }),
+  credentialsUpdated: mkCredentialsUpdated({ pubsub, redis, connP }),
+  groupParticipantsUpdate: mkGroupParticipantsUpdate({ pubsub, redis, connP }),
+  groupUpdate: mkGroupUpdate({ pubsub, redis, connP }),
+  messageStatusUpdate: mkMessageStatusUpdate({ pubsub, redis, connP }),
   open: mkOpen({ pubsub, redis, connP }),
+  qr: mkQr({ pubsub, redis, connP }),
+  receivedPong: mkReceivedPong({ pubsub, redis, connP }),
+  userStatusUpdate: mkUserStatusUpdate({ pubsub, redis, connP }),
   wsClose: mkWsClose({ pubsub, redis, connP })
 })

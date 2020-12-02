@@ -6,7 +6,6 @@ const seals = require('../seals')
  */
 const wsClose = ({ pubsub, redis, connP }) => err => {
   console.log('event ws-close')
-  console.dir(err)
 
   pubsub.publish(seals.wsClose, { wsClose: JSON.stringify(err) })
 }

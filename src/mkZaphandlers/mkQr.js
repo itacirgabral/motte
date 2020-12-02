@@ -6,7 +6,6 @@ const seals = require('../seals')
  */
 const qr = ({ pubsub, redis, connP }) => qr => {
   console.log('event qr')
-  console.dir(qr)
 
   pubsub.publish(seals.qr, { qr })
   redis.set('qrcodeLast', qr)

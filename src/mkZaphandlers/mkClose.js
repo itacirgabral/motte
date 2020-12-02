@@ -6,7 +6,6 @@ const seals = require('../seals')
  */
 const close = ({ pubsub, redis, connP }) => err => {
   console.log('event close')
-  console.dir(err)
 
   pubsub.publish(seals.close, { close: JSON.stringify(err) })
 }

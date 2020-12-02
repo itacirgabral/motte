@@ -17,25 +17,24 @@ const typeDefs = gql`
   type Subscription {
     chatNew: String
     chatUpdate: String
+    chatsUpdate: String
     close: String
     connecting: String
     connectionPhoneChange: String
+    connectionValidated: String
     credentialsUpdated: String
-    groupDescriptionUpdate: String
-    groupParticipantsAdd: String
-    groupParticipantsDemote: String
-    groupParticipantsPromote: String
-    groupParticipantsRemove: String
-    groupSettingsUpdate: String
+    dispatchBatch: String
+    groupParticipantsUpdate: String
+    groupUpdate: String
     messageNew: String
     messageStatusUpdate: String
     messageUpdate: String
     open: String
     qr: String
+    receivedPong: String
     userPresenceUpdate: String
     userStatusUpdate: String
     wsClose: String
-    dispatchBatch(to: String): String
   }
 `
 

@@ -6,7 +6,6 @@ const seals = require('../seals')
  */
 const chatNew = ({ pubsub, redis, connP }) => chat => {
   console.log('event chat-new')
-  console.dir(chat)
 
   pubsub.publish(seals.chatNew, { chatNew: JSON.stringify(chat) })
 }

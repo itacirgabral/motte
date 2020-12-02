@@ -2,33 +2,29 @@ const { WAConnection } = require('@adiwajshing/baileys')
 
 const zapland = async ({
   zaphandlers: {
-    chatNew,
-    chatsReceived,
-    chatUpdate,
-    close,
-    connecting,
-    contactsReceived,
-    connectionPhoneChange,
-    credentialsUpdated,
-    groupDescriptionUpdate,
-    groupParticipantsAdd,
-    groupParticipantsDemote,
-    groupParticipantsPromote,
-    groupParticipantsRemove,
-    groupSettingsUpdate,
-    messageNew,
-    messageStatusUpdate,
-    messageUpdate,
     open,
+    connecting,
+    connectionValidated,
+    close,
+    wsClose,
+    credentialsUpdated,
     qr,
-    userPresenceUpdate,
+    connectionPhoneChange,
     userStatusUpdate,
-    wsClose
+    chatNew,
+    contactsReceived,
+    chatsReceived,
+    chatsUpdate,
+    chatUpdate,
+    messageStatusUpdate,
+    groupParticipantsUpdate,
+    groupUpdate,
+    receivedPong
   },
   redis
 }) => {
   const conn = new WAConnection()
-  conn.logger.level = 'debug'
+  // conn.logger.level = 'debug'
 
   const creds = await redis.get('creds')
 
@@ -38,25 +34,24 @@ const zapland = async ({
     conn.loadAuthInfo(authInfo)
   }
 
-  conn.on('chat-new', chatNew)
-  conn.on('chats-received', chatsReceived)
-  conn.on('chat-update', chatUpdate)
-  conn.on('close', close)
-  conn.on('connecting', connecting)
-  conn.on('contacts-received', contactsReceived)
-  conn.on('connection-phone-change', connectionPhoneChange)
-  conn.on('credentials-updated', credentialsUpdated)
-  conn.on('group-description-update', groupDescriptionUpdate)
-  conn.on('group-participants-add', groupParticipantsAdd)
-  conn.on('group-participants-demote', groupParticipantsDemote)
-  conn.on('group-participants-promote', groupParticipantsPromote)
-  conn.on('group-participants-remove', groupParticipantsRemove)
-  conn.on('group-settings-update', groupSettingsUpdate)
-  conn.on('message-status-update', messageStatusUpdate)
   conn.on('open', open)
-  conn.on('qr', qr)
-  conn.on('user-status-update', userStatusUpdate)
+  conn.on('connecting', connecting)
+  conn.on('connection-validated', connectionValidated)
+  conn.on('close', close)
   conn.on('ws-close', wsClose)
+  conn.on('credentials-updated', credentialsUpdated)
+  conn.on('qr', qr)
+  conn.on('connection-phone-change', connectionPhoneChange)
+  conn.on('user-status-update', userStatusUpdate)
+  conn.on('chat-new', chatNew)
+  conn.on('contacts-received', contactsReceived)
+  conn.on('chats-received', chatsReceived)
+  conn.on('chats-update', chatsUpdate)
+  conn.on('chat-update', chatUpdate)
+  conn.on('message-status-update', messageStatusUpdate)
+  conn.on('group-participants-update', groupParticipantsUpdate)
+  conn.on('group-update', groupUpdate)
+  conn.on('received-pong', receivedPong)
 
   await conn.connect()
 

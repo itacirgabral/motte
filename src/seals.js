@@ -1,23 +1,24 @@
 const seals = {
   chatNew: 'chatNew',
-  connectionPhoneChange: 'connectionPhoneChange',
-  contactsReceived: 'contactsReceived',
-  groupParticipantsDemote: 'groupParticipantsDemote',
-  qr: 'qr',
   chatUpdate: 'chatUpdate',
-  credentialsUpdated: 'credentialsUpdated',
-  groupParticipantsPromote: 'groupParticipantsPromote',
-  messageStatusUpdate: 'messageStatusUpdate',
+  chatsUpdate: 'chatsUpdate',
   close: 'close',
-  groupDescriptionUpdate: 'groupDescriptionUpdate',
-  groupParticipantsRemove: 'groupParticipantsRemove',
-  userStatusUpdate: 'userStatusUpdate',
   connecting: 'connecting',
-  groupParticipantsAdd: 'groupParticipantsAdd',
-  groupSettingsUpdate: 'groupSettingsUpdate',
+  connectionPhoneChange: 'connectionPhoneChange',
+  connectionValidated: 'connectionValidated',
+  credentialsUpdated: 'credentialsUpdated',
+  dispatchBatch: 'dispatchBatch',
+  groupParticipantsUpdate: 'groupParticipantsUpdate',
+  groupUpdate: 'groupUpdate',
+  messageNew: 'messageNew',
+  messageStatusUpdate: 'messageStatusUpdate',
+  messageUpdate: 'messageUpdate',
   open: 'open',
-  wsClose: 'wsClose',
-  dispatchBatch: 'dispatchBatch'
+  qr: 'qr',
+  receivedPong: 'receivedPong',
+  userPresenceUpdate: 'userPresenceUpdate',
+  userStatusUpdate: 'userStatusUpdate',
+  wsClose: 'wsClose'
 }
 
 module.exports = seals

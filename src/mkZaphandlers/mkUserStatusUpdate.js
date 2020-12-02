@@ -6,7 +6,6 @@ const seals = require('../seals')
  */
 const userStatusUpdate = ({ pubsub, redis, connP }) => update => {
   console.log('event user-status-update')
-  console.dir(update)
 
   pubsub.publish(seals.userStatusUpdate, { userStatusUpdate: JSON.stringify(update) })
 }

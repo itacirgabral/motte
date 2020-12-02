@@ -6,7 +6,6 @@ const seals = require('../seals')
  */
 const connectionPhoneChange = ({ pubsub, redis, connP }) => state => {
   console.log('event connection-phone-change')
-  console.dir(state)
 
   pubsub.publish(seals.connectionPhoneChange, { connectionPhoneChange: JSON.stringify(state) })
 }
