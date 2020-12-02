@@ -10,3 +10,8 @@
 ## message+user accompanied
 - [x] message-status-update
 - [x] user-status-update
+
+## adonisfy
+- [ ] remove graphql
+- [ ] logs on redis
+- [ ] logs on adonis
