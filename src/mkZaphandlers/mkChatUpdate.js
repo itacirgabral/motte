@@ -3,7 +3,7 @@ const { MessageType, Presence } = require('@adiwajshing/baileys')
 const seals = require('../seals')
 
 /**
- * when a chat is updated (archived, deleted, pinned)
+ *  when a chat is updated (new message, updated message, deleted, pinned, presence updated etc)
  * on (event: 'chat-update', listener: (chat: Partial<WAChat> & { jid: string }) => void): this
  */
 const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {

@@ -1,7 +1,7 @@
 const seals = require('../seals')
 
 /**
- * when the chats has received
+ * when chats are sent by WA, and when all messages are received from WhatsApp
  * on (event: 'chats-received', (update: {hasNewChats?: boolean, hasReceivedLastMessage?: boolean}) => void): this
  */
 const chatsReceived = ({ pubsub, redis, connP }) => async ({ hasNewChats, hasReceivedLastMessage }) => {
