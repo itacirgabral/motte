@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when a new chat is added
  * on (event: 'chat-new', listener: (chat: WAChat) => void): this
  */
-const chatNew = ({ pubsub, redis, connP }) => async (chat) => {
+const chatNew = ({ wsP, redis, connP }) => async (chat) => {
   console.log('event chat-new')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const chatNew = ({ pubsub, redis, connP }) => async (chat) => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.chatNew, { chatNew: JSON.stringify(chat) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'chat-new', data: chat })
+      }
+    }
+  }))
 }
 
 module.exports = chatNew

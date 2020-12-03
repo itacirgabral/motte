@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when the connection has been validated
  * on (event: 'connection-validated', listener: (user: WAUser) => void): this
  */
-const connectionValidated = ({ pubsub, redis, connP }) => async (user) => {
+const connectionValidated = ({ wsP, redis, connP }) => async (user) => {
   console.log('event connection-validated')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const connectionValidated = ({ pubsub, redis, connP }) => async (user) => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.connectionValidated, { connectionValidated: JSON.stringify(user) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'connection-validated', data: user })
+      }
+    }
+  }))
 }
 
 module.exports = connectionValidated

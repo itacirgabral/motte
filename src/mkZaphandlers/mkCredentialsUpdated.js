@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when WA updates the credentials
  * on (event: 'credentials-updated', listener: (auth: AuthenticationCredentials) => void): this
  */
-const credentialsUpdated = ({ pubsub, redis, connP }) => async (auth) => {
+const credentialsUpdated = ({ wsP, redis, connP }) => async (auth) => {
   console.log('event credentials-updated')
   const creds = {
     clientID: auth.clientID,
@@ -20,7 +18,18 @@ const credentialsUpdated = ({ pubsub, redis, connP }) => async (auth) => {
 
   const credentialsUpdated = JSON.stringify(creds)
 
-  pubsub.publish(seals.credentialsUpdated, { credentialsUpdated })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'credentials-updated', data: creds })
+      }
+    }
+  }))
 
   pipeline.set('creds', credentialsUpdated)
   pipeline.bgsave()

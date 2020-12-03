@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when a user's status is updated
  * on (event: 'user-status-update', listener: (update: {jid: string, status?: string}) => void): this
  */
-const userStatusUpdate = ({ pubsub, redis, connP }) => async (update) => {
+const userStatusUpdate = ({ wsP, redis, connP }) => async (update) => {
   console.log('event user-status-update')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const userStatusUpdate = ({ pubsub, redis, connP }) => async (update) => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.userStatusUpdate, { userStatusUpdate: JSON.stringify(update) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'user-status-update', data: update })
+      }
+    }
+  }))
 }
 
 module.exports = userStatusUpdate

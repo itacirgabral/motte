@@ -1,21 +1,27 @@
-const seals = require('../seals')
-
 /**
  * when the contacts has received
  * on (event: 'contacts-received', listener: () => void): this
  */
-const contactsReceived = ({ pubsub, redis, connP }) => async () => {
+const contactsReceived = ({ wsP, redis, connP }) => async () => {
   console.log('event contacts-received')
-  const conn = await connP
-
-  const length = Object.keys(conn.contacts).length
 
   const pipeline = redis.pipeline()
   pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'contacts-received', data: null }))
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.contactsReceived, { contactsReceived: length })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'contacts-received', data: null })
+      }
+    }
+  }))
 }
 
 module.exports = contactsReceived

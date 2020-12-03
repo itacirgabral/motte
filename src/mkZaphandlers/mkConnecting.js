@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  *  when the connection is opening
  * on (event: 'connecting', listener: () => void): this
  */
-const connecting = ({ pubsub, redis, connP }) => async () => {
+const connecting = ({ wsP, redis, connP }) => async () => {
   console.log('event connecting')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const connecting = ({ pubsub, redis, connP }) => async () => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.connecting, { connecting: JSON.stringify(true) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'connecting', data: null })
+      }
+    }
+  }))
 }
 
 module.exports = connecting

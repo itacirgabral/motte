@@ -17,23 +17,23 @@ const mkReceivedPong = require('./mkReceivedPong')
 const mkUserStatusUpdate = require('./mkUserStatusUpdate')
 const mkWsClose = require('./mkWsClose')
 
-module.exports = ({ pubsub, redis, connP }) => ({
-  chatNew: mkChatNew({ pubsub, redis, connP }),
-  chatUpdate: mkChatUpdate({ pubsub, redis, connP }),
-  chatsReceived: mkChatsReceived({ pubsub, redis, connP }),
-  chatsUpdate: mkChatsUpdate({ pubsub, redis, connP }),
-  close: mkClose({ pubsub, redis, connP }),
-  connecting: mkConnecting({ pubsub, redis, connP }),
-  connectionPhoneChange: mkConnectionPhoneChange({ pubsub, redis, connP }),
-  connectionValidated: mkConnectionValidated({ pubsub, redis, connP }),
-  contactsReceived: mkContactsReceived({ pubsub, redis, connP }),
-  credentialsUpdated: mkCredentialsUpdated({ pubsub, redis, connP }),
-  groupParticipantsUpdate: mkGroupParticipantsUpdate({ pubsub, redis, connP }),
-  groupUpdate: mkGroupUpdate({ pubsub, redis, connP }),
-  messageStatusUpdate: mkMessageStatusUpdate({ pubsub, redis, connP }),
-  open: mkOpen({ pubsub, redis, connP }),
-  qr: mkQr({ pubsub, redis, connP }),
-  receivedPong: mkReceivedPong({ pubsub, redis, connP }),
-  userStatusUpdate: mkUserStatusUpdate({ pubsub, redis, connP }),
-  wsClose: mkWsClose({ pubsub, redis, connP })
+module.exports = ({ wsP, redis, connP }) => ({
+  chatNew: mkChatNew({ wsP, redis, connP }),
+  chatUpdate: mkChatUpdate({ wsP, redis, connP }),
+  chatsReceived: mkChatsReceived({ wsP, redis, connP }),
+  chatsUpdate: mkChatsUpdate({ wsP, redis, connP }),
+  close: mkClose({ wsP, redis, connP }),
+  connecting: mkConnecting({ wsP, redis, connP }),
+  connectionPhoneChange: mkConnectionPhoneChange({ wsP, redis, connP }),
+  connectionValidated: mkConnectionValidated({ wsP, redis, connP }),
+  contactsReceived: mkContactsReceived({ wsP, redis, connP }),
+  credentialsUpdated: mkCredentialsUpdated({ wsP, redis, connP }),
+  groupParticipantsUpdate: mkGroupParticipantsUpdate({ wsP, redis, connP }),
+  groupUpdate: mkGroupUpdate({ wsP, redis, connP }),
+  messageStatusUpdate: mkMessageStatusUpdate({ wsP, redis, connP }),
+  open: mkOpen({ wsP, redis, connP }),
+  qr: mkQr({ wsP, redis, connP }),
+  receivedPong: mkReceivedPong({ wsP, redis, connP }),
+  userStatusUpdate: mkUserStatusUpdate({ wsP, redis, connP }),
+  wsClose: mkWsClose({ wsP, redis, connP })
 })

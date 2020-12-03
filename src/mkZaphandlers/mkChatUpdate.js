@@ -1,12 +1,10 @@
 const { MessageType, Presence } = require('@adiwajshing/baileys')
 
-const seals = require('../seals')
-
 /**
  *  when a chat is updated (new message, updated message, deleted, pinned, presence updated etc)
  * on (event: 'chat-update', listener: (chat: Partial<WAChat> & { jid: string }) => void): this
  */
-const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {
+const chatUpdate = ({ wsP, redis, connP }) => async (chat) => {
   console.log('event chat-update')
 
   const pipeline = redis.pipeline()
@@ -52,7 +50,18 @@ const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {
     }
   }
 
-  pubsub.publish(seals.chatUpdate, { chatUpdate: JSON.stringify(chat) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'chat-update', data: chat })
+      }
+    }
+  }))
 }
 
 module.exports = chatUpdate

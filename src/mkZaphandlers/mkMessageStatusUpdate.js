@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when a message's status is updated (deleted, delivered, read, sent etc.)
  * on (event: 'message-status-update', listener: (message: WAMessageStatusUpdate) => void): this
  */
-const messageStatusUpdate = ({ pubsub, redis, connP }) => async (message) => {
+const messageStatusUpdate = ({ wsP, redis, connP }) => async (message) => {
   console.log('event message-status-update')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const messageStatusUpdate = ({ pubsub, redis, connP }) => async (message) => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.messageStatusUpdate, { messageStatusUpdate: JSON.stringify(message) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'message-status-update', data: message })
+      }
+    }
+  }))
 }
 
 module.exports = messageStatusUpdate

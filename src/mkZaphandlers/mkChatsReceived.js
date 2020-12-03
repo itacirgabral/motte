@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when chats are sent by WA, and when all messages are received from WhatsApp
  * on (event: 'chats-received', (update: {hasNewChats?: boolean, hasReceivedLastMessage?: boolean}) => void): this
  */
-const chatsReceived = ({ pubsub, redis, connP }) => async ({ hasNewChats, hasReceivedLastMessage }) => {
+const chatsReceived = ({ wsP, redis, connP }) => async ({ hasNewChats, hasReceivedLastMessage }) => {
   console.log('event chats-received')
   const conn = await connP
 
@@ -15,13 +13,22 @@ const chatsReceived = ({ pubsub, redis, connP }) => async ({ hasNewChats, hasRec
   const knoweds = conn.chats.array
     .filter(({ jid = '' }) => jid.split('@s.whatsapp.net').length === 2)
     .map(({ jid }) => jid)
-
-  const length = knoweds.length
   pipeline.sadd('contacts', knoweds)
 
   await pipeline.exec()
 
-  pubsub.publish(seals.chatsReceived, { chatsReceived: length })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'chat-new', data: { event: 'chat-new', data: { hasNewChats, hasReceivedLastMessage } } })
+      }
+    }
+  }))
 }
 
 module.exports = chatsReceived

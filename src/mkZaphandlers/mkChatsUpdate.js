@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when multiple chats are updated (new message, updated message, deleted, pinned, etc)
  * on (event: 'chats-update', listener: (chats: WAChatUpdate[]) => void): this
  */
-const chatsUpdate = ({ pubsub, redis, connP }) => async (chats) => {
+const chatsUpdate = ({ wsP, redis, connP }) => async (chats) => {
   console.log('event chats-update')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const chatsUpdate = ({ pubsub, redis, connP }) => async (chats) => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.chatsUpdate, { chatsUpdate: JSON.stringify(chats) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'chats-update', data: chats })
+      }
+    }
+  }))
 }
 
 module.exports = chatsUpdate

@@ -1,10 +1,8 @@
-const seals = require('../seals')
-
 /**
  * when participants are added to a group
  * on (event: 'group-participants-update', listener: (update: {jid: string, participants: string[], actor?: string, action: WAParticipantAction}) => void): this
  */
-const groupParticipantsUpdate = ({ pubsub, redis, connP }) => async (user) => {
+const groupParticipantsUpdate = ({ wsP, redis, connP }) => async (user) => {
   console.log('event group-participants-update')
 
   const pipeline = redis.pipeline()
@@ -12,7 +10,18 @@ const groupParticipantsUpdate = ({ pubsub, redis, connP }) => async (user) => {
   pipeline.ltrim('log:baileys:test', 0, 99)
   await pipeline.exec()
 
-  pubsub.publish(seals.groupParticipantsUpdate, { groupParticipantsUpdate: JSON.stringify(user) })
+  const ws = await wsP
+  ws.send(JSON.stringify({
+    t: 7,
+    d: {
+      topic: 'chat',
+      event: 'message',
+      data: {
+        username: 'zapguiado',
+        body: JSON.stringify({ event: 'group-participants-update', data: user })
+      }
+    }
+  }))
 }
 
 module.exports = groupParticipantsUpdate
