@@ -12,6 +12,6 @@
 - [x] user-status-update
 
 ## adonisfy
-- [ ] remove graphql
+- [x] remove graphql
 - [ ] logs on redis
 - [ ] logs on adonis
