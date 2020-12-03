@@ -13,5 +13,5 @@
 
 ## adonisfy
 - [x] remove graphql
-- [ ] logs on redis
+- [x] logs on redis
 - [ ] logs on adonis

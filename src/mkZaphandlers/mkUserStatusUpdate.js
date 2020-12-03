@@ -4,8 +4,13 @@ const seals = require('../seals')
  * when a user's status is updated
  * on (event: 'user-status-update', listener: (update: {jid: string, status?: string}) => void): this
  */
-const userStatusUpdate = ({ pubsub, redis, connP }) => update => {
+const userStatusUpdate = ({ pubsub, redis, connP }) => async (update) => {
   console.log('event user-status-update')
+
+  const pipeline = redis.pipeline()
+  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'user-status-update', data: update }))
+  pipeline.ltrim('log:baileys:test', 0, 99)
+  await pipeline.exec()
 
   pubsub.publish(seals.userStatusUpdate, { userStatusUpdate: JSON.stringify(update) })
 }

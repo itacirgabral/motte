@@ -9,6 +9,11 @@ const seals = require('../seals')
 const chatUpdate = ({ pubsub, redis, connP }) => async (chat) => {
   console.log('event chat-update')
 
+  const pipeline = redis.pipeline()
+  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'chat-update', data: chat }))
+  pipeline.ltrim('log:baileys:test', 0, 99)
+  await pipeline.exec()
+
   if (
     Array.isArray(chat?.messages?.array) &&
     chat.messages.array.length === 1 &&

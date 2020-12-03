@@ -14,11 +14,14 @@ const credentialsUpdated = ({ pubsub, redis, connP }) => async (auth) => {
     macKey: auth.macKey.toString('base64')
   }
 
+  const pipeline = redis.pipeline()
+  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'credentials-updated', data: creds }))
+  pipeline.ltrim('log:baileys:test', 0, 99)
+
   const credentialsUpdated = JSON.stringify(creds)
 
   pubsub.publish(seals.credentialsUpdated, { credentialsUpdated })
 
-  const pipeline = redis.pipeline()
   pipeline.set('creds', credentialsUpdated)
   pipeline.bgsave()
 

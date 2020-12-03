@@ -8,12 +8,18 @@ const chatsReceived = ({ pubsub, redis, connP }) => async ({ hasNewChats, hasRec
   console.log('event chats-received')
   const conn = await connP
 
+  const pipeline = redis.pipeline()
+  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'chat-new', data: { hasNewChats, hasReceivedLastMessage } }))
+  pipeline.ltrim('log:baileys:test', 0, 99)
+
   const knoweds = conn.chats.array
     .filter(({ jid = '' }) => jid.split('@s.whatsapp.net').length === 2)
     .map(({ jid }) => jid)
 
   const length = knoweds.length
-  await redis.sadd('contacts', knoweds)
+  pipeline.sadd('contacts', knoweds)
+
+  await pipeline.exec()
 
   pubsub.publish(seals.chatsReceived, { chatsReceived: length })
 }

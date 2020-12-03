@@ -10,6 +10,11 @@ const contactsReceived = ({ pubsub, redis, connP }) => async () => {
 
   const length = Object.keys(conn.contacts).length
 
+  const pipeline = redis.pipeline()
+  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'contacts-received', data: null }))
+  pipeline.ltrim('log:baileys:test', 0, 99)
+  await pipeline.exec()
+
   pubsub.publish(seals.contactsReceived, { contactsReceived: length })
 }
 
