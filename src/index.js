@@ -2,14 +2,15 @@
 const Redis = require('ioredis')
 
 const zapland = require('./zapland')
-// const mkResolvers = require('./mkResolvers')
 const mkZaphandlers = require('./mkZaphandlers')
 
-const host = process.env.HOST_IP
-const port = process.env.HOST_PORT
-const redisConn = process.env.REDIS_CONN
+const britoland = require('./britoland')
+const mkBridgehandlers = require('./mkBridgehandlers')
 
+
+const redisConn = process.env.REDIS_CONN
 const redis = new Redis(redisConn)
+
 const pubsub = {
   publish: () => {}
 }
@@ -21,3 +22,11 @@ const connPBox = new Promise((resolve, reject) => {
 const zaphandlers = mkZaphandlers({ pubsub, redis, connP: connPBox })
 const connP = zapland({ zaphandlers, redis })
 resolverConnPBox(connP)
+
+let resolverWsPBox
+const wsPBox = new Promise((resolve, reject) => {
+  resolverWsPBox = resolve
+})
+const bridgehandlers = mkBridgehandlers({ wsP: wsPBox, redis })
+const wsP = britoland({ bridgehandlers, redis })
+resolverWsPBox(wsP)
