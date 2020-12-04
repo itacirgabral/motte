@@ -1,6 +1,4 @@
-const { MessageType } = require('@adiwajshing/baileys')
-
-const mkEvent = ({ wsP, redis, connP }) => async (d) => {
+const mkEvent = ({ wsP, redis, connP, fifomeP }) => async (d) => {
   console.log('src/mkBridgehandlers/mkevent')
   console.log(JSON.stringify(d, null, 2))
 
@@ -8,11 +6,10 @@ const mkEvent = ({ wsP, redis, connP }) => async (d) => {
     const [command, jid = ''] = d?.data?.username?.split(':')
     const [, szapnet] = jid.split('@')
     if (szapnet === 's.whatsapp.net') {
-      const conn = await connP
+      const fifome = await fifomeP
       switch (command) {
         case 'enviarMensagemTexto':
-          await conn.sendMessage(jid, d.data.body, MessageType.text)
-          console.log(`to=${jid} msg=${d.data.body}`)
+          await fifome({ jid, msg: d.data.body })
       }
     }
   }

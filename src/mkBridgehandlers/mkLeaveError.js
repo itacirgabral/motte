@@ -1,4 +1,4 @@
-const mkLeaveError = ({ wsP, redis, connP }) => async (d) => {
+const mkLeaveError = ({ wsP, redis, connP, fifomeP }) => async (d) => {
   
 }
 

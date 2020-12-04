@@ -15,3 +15,8 @@
 - [x] remove graphql
 - [x] logs on redis
 - [x] logs on adonis
+
+## fifo drummer
+- [x] enfileirar envio
+- [ ] drummer espera/envia
+- [ ] drummer não binário

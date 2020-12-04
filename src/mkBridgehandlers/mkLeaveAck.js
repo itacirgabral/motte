@@ -1,4 +1,4 @@
-const mkLeaveAck = ({ wsP, redis, connP }) => async (d) => {
+const mkLeaveAck = ({ wsP, redis, connP, fifomeP }) => async (d) => {
   
 }
 

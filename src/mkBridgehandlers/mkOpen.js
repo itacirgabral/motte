@@ -1,4 +1,4 @@
-const mkOpen = ({ wsP, redis, connP }) => {
+const mkOpen = ({ wsP, redis, connP, fifomeP }) => {
   const ping = JSON.stringify({ t: 8 })
   const joinchat = JSON.stringify({ t: 1, d: { topic: 'chat' } })
   let pingIntervalId = 0
