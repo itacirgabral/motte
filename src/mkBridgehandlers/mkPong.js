@@ -1,4 +1,4 @@
-const mkPong = ({ wsP, redis }) => d => {
+const mkPong = ({ wsP, redis, connP }) => async (d) => {
   
 }
 

@@ -14,14 +14,14 @@ let resolverWsPBox
 const wsPBox = new Promise((resolve, reject) => {
   resolverWsPBox = resolve
 })
-const bridgehandlers = mkBridgehandlers({ wsP: wsPBox, redis })
-const wsP = britoland({ bridgehandlers, redis })
-resolverWsPBox(wsP)
-
 let resolverConnPBox
 const connPBox = new Promise((resolve, reject) => {
   resolverConnPBox = resolve
 })
+
+const bridgehandlers = mkBridgehandlers({ wsP: wsPBox, redis, connP: connPBox })
+const wsP = britoland({ bridgehandlers, redis })
+resolverWsPBox(wsP)
 const zaphandlers = mkZaphandlers({ wsP, redis, connP: connPBox })
 const connP = zapland({ zaphandlers, redis })
 resolverConnPBox(connP)

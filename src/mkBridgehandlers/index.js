@@ -9,17 +9,17 @@ const mkOpen = require('./mkOpen')
 const mkPing = require('./mkPing')
 const mkPong = require('./mkPong')
 
-const mkBridgehandlers = ({ wsP, redis }) => ({
-  event: mkEvent({ wsP, redis }),
-  join: mkJoin({ wsP, redis }),
-  joinAck: mkJoinAck({ wsP, redis }),
-  joinError: mkJoinError({ wsP, redis }),
-  leave: mkLeave({ wsP, redis }),
-  leaveAck: mkLeaveAck({ wsP, redis }),
-  leaveError: mkLeaveError({ wsP, redis }),
-  open: mkOpen({ wsP, redis }),
-  ping: mkPing({ wsP, redis }),
-  pong: mkPong({ wsP, redis })
+const mkBridgehandlers = ({ wsP, redis, connP }) => ({
+  event: mkEvent({ wsP, redis, connP }),
+  join: mkJoin({ wsP, redis, connP }),
+  joinAck: mkJoinAck({ wsP, redis, connP }),
+  joinError: mkJoinError({ wsP, redis, connP }),
+  leave: mkLeave({ wsP, redis, connP }),
+  leaveAck: mkLeaveAck({ wsP, redis, connP }),
+  leaveError: mkLeaveError({ wsP, redis, connP }),
+  open: mkOpen({ wsP, redis, connP }),
+  ping: mkPing({ wsP, redis, connP }),
+  pong: mkPong({ wsP, redis, connP })
 })
 
 module.exports = mkBridgehandlers

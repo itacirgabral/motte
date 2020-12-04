@@ -1,4 +1,4 @@
-const mkJoinAck = ({ wsP, redis }) => d => {
+const mkJoinAck = ({ wsP, redis, connP }) => async (d) => {
   
 }
 

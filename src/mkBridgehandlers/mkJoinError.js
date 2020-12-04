@@ -1,4 +1,4 @@
-const mkJoinError = ({ wsP, redis }) => d => {
+const mkJoinError = ({ wsP, redis, connP }) => async (d) => {
   
 }
 
