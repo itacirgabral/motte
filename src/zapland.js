@@ -24,7 +24,7 @@ const zapland = async ({
   redis
 }) => {
   const conn = new WAConnection()
-  conn.logger.level = 'trace'
+  // conn.logger.level = 'trace'
 
   const creds = await redis.get('creds')
 

@@ -10,6 +10,7 @@ const mkZaphandlers = require('./mkZaphandlers')
 
 const redisConn = process.env.REDIS_CONN
 const redis = new Redis(redisConn)
+const redisB = new Redis(redisConn)
 
 let resolverWsPBox
 const wsPBox = new Promise((resolve, reject) => {
@@ -31,5 +32,5 @@ const zaphandlers = mkZaphandlers({ wsP, redis, connP: connPBox })
 const connP = zapland({ zaphandlers, redis })
 resolverConnPBox(connP)
 
-const { fifoMe } = feefifofum({ redis, connP })
+const { fifoMe } = feefifofum({ redis, connP, redisB })
 resolverFifomePBOX(fifoMe)

@@ -1,10 +1,8 @@
-const { MessageType, Presence } = require('@adiwajshing/baileys')
-
 /**
  *  when a chat is updated (new message, updated message, deleted, pinned, presence updated etc)
  * on (event: 'chat-update', listener: (chat: Partial<WAChat> & { jid: string }) => void): this
  */
-const chatUpdate = ({ wsP, redis, connP }) => async (chat) => {
+const chatUpdate = ({ placa = 'plutocharon851557', wsP, redis, connP }) => async (chat) => {
   console.log('event chat-update')
 
   const pipeline = redis.pipeline()
@@ -18,36 +16,15 @@ const chatUpdate = ({ wsP, redis, connP }) => async (chat) => {
     chat.messages.array[0]?.key?.fromMe &&
     chat.messages.array[0]?.message?.extendedTextMessage
   ) {
-    const to = chat.messages.array[0].key.remoteJid
-    const messageText = chat.messages.array[0].message.extendedTextMessage.text
-
-    const pipeline = redis.pipeline()
-    pipeline.lindex('batchLast', -1)// 0
-    pipeline.hget('batchInfo', 'to')// 1
-    pipeline.hlen('batchInfo')// 2
-    const result = await pipeline.exec()
-
-    if (to === result[1][1] && messageText === result[0][1]) {
-      const idx = String(Number(result[2][1]) - 2) // -to  -length
-      const pipeline = redis.pipeline()
-      pipeline.rpop('batchLast')// 0
-      pipeline.rpoplpush('batchList', 'batchLast')// 1
-      pipeline.hset('batchInfo', `timestamps:${idx}:back`, Date.now())// 2
-      const result2 = await pipeline.exec()
-      const batchLast = result2[1][1]
-
-      if (batchLast) {
-        const conn = await connP
-        conn.updatePresence(to, Presence.composing)
-        setTimeout(async () => {
-          conn.sendMessage(to, batchLast, MessageType.text)
-          conn.updatePresence(to, Presence.available)
-          redis.hset('batchInfo', `timestamps:${Number(idx) + 1}:go`, Date.now())
-        }, batchLast.lengtbatchLasth > 50 ? 1900 : batchLast.length * 20)
-      } else {
-        await redis.hset('batchDelivery', 'status', 'done')
-      }
-    }
+    const echo = `fifo:${placa}:echo`
+    const jid = chat.messages.array[0].key.remoteJid
+    const msg = chat.messages.array[0].message.extendedTextMessage.text
+    const fifoBread = JSON.stringify({
+      type: 'textMessage_v001',
+      jid,
+      msg
+    })
+    await redis.lpush(echo, fifoBread)
   }
 
   const ws = await wsP
