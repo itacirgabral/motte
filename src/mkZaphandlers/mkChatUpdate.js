@@ -2,12 +2,13 @@
  *  when a chat is updated (new message, updated message, deleted, pinned, presence updated etc)
  * on (event: 'chat-update', listener: (chat: Partial<WAChat> & { jid: string }) => void): this
  */
-const chatUpdate = ({ placa = 'plutocharon851557', redis, connP }) => async (chat) => {
+const chatUpdate = ({ shard, redis, connP }) => async (chat) => {
   console.log('event chat-update')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'chat-update', data: chat }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'chat-update', data: chat }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 
   if (
@@ -16,15 +17,15 @@ const chatUpdate = ({ placa = 'plutocharon851557', redis, connP }) => async (cha
     chat.messages.array[0]?.key?.fromMe &&
     chat.messages.array[0]?.message?.extendedTextMessage
   ) {
-    const echo = `fifo:${placa}:echo`
+    const fifoBakedKey = `zap:${shard}:fifo:bakedBread`
     const jid = chat.messages.array[0].key.remoteJid
     const msg = chat.messages.array[0].message.extendedTextMessage.text
-    const fifoBread = JSON.stringify({
+    const bakedBread = JSON.stringify({
       type: 'textMessage_v001',
       jid,
       msg
     })
-    await redis.lpush(echo, fifoBread)
+    await redis.lpush(fifoBakedKey, bakedBread)
   }
 }
 

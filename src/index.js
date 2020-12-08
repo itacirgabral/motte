@@ -1,7 +1,7 @@
 
 const Redis = require('ioredis')
 
-const feefifofum = require('./feefifofum')
+// const feefifofum = require('./feefifofum')
 const zapland = require('./zapland')
 const mkZaphandlers = require('./mkZaphandlers')
 
@@ -13,7 +13,7 @@ const connPBox = new Promise((resolve, reject) => {
   resolverConnPBox = resolve
 })
 
-const zaphandlers = mkZaphandlers({ redis, connP: connPBox })
-const connP = zapland({ zaphandlers, redis })
+const shard = process.env.SHARD
+const zaphandlers = mkZaphandlers({ shard, redis, connP: connPBox })
+const connP = zapland({ shard, zaphandlers, redis })
 resolverConnPBox(connP)
-

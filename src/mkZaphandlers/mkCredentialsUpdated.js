@@ -2,7 +2,7 @@
  * when WA updates the credentials
  * on (event: 'credentials-updated', listener: (auth: AuthenticationCredentials) => void): this
  */
-const credentialsUpdated = ({ redis, connP }) => async (auth) => {
+const credentialsUpdated = ({ shard, redis, connP }) => async (auth) => {
   console.log('event credentials-updated')
   const creds = {
     clientID: auth.clientID,
@@ -12,13 +12,14 @@ const credentialsUpdated = ({ redis, connP }) => async (auth) => {
     macKey: auth.macKey.toString('base64')
   }
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'credentials-updated', data: creds }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'credentials-updated', data: creds }))
+  pipeline.ltrim(logKey, 0, 99)
 
   const credentialsUpdated = JSON.stringify(creds)
-
-  pipeline.set('creds', credentialsUpdated)
+  const credsKey = `zap:${shard}:creds`
+  pipeline.set(credsKey, credentialsUpdated)
   pipeline.bgsave()
 
   await pipeline.exec()

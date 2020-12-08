@@ -2,12 +2,13 @@
  * when the connection has closed
  * on (event: 'close', listener: (err: {reason?: DisconnectReason | string, isReconnecting: boolean}) => void): this
  */
-const close = ({ redis, connP }) => async (err) => {
+const close = ({ shard, redis, connP }) => async (err) => {
   console.log('event close')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'close', data: err }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'close', data: err }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

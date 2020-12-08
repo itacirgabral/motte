@@ -2,12 +2,13 @@
  * when participants are added to a group
  * on (event: 'group-participants-update', listener: (update: {jid: string, participants: string[], actor?: string, action: WAParticipantAction}) => void): this
  */
-const groupParticipantsUpdate = ({ redis, connP }) => async (user) => {
+const groupParticipantsUpdate = ({ shard, redis, connP }) => async (user) => {
   console.log('event group-participants-update')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'group-participants-update', data: user }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'group-participants-update', data: user }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

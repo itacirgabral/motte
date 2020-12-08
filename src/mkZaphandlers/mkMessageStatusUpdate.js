@@ -2,12 +2,13 @@
  * when a message's status is updated (deleted, delivered, read, sent etc.)
  * on (event: 'message-status-update', listener: (message: WAMessageStatusUpdate) => void): this
  */
-const messageStatusUpdate = ({ redis, connP }) => async (message) => {
+const messageStatusUpdate = ({ shard, redis, connP }) => async (message) => {
   console.log('event message-status-update')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'message-status-update', data: message }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'message-status-update', data: message }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

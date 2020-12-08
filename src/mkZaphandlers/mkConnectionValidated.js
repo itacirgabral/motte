@@ -2,12 +2,13 @@
  * when the connection has been validated
  * on (event: 'connection-validated', listener: (user: WAUser) => void): this
  */
-const connectionValidated = ({ redis, connP }) => async (user) => {
+const connectionValidated = ({ shard, redis, connP }) => async (user) => {
   console.log('event connection-validated')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'connection-validated', data: user }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'connection-validated', data: user }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

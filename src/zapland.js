@@ -1,6 +1,7 @@
 const { WAConnection } = require('@adiwajshing/baileys')
 
 const zapland = async ({
+  shard,
   zaphandlers: {
     open,
     connecting,
@@ -26,7 +27,7 @@ const zapland = async ({
   const conn = new WAConnection()
   // conn.logger.level = 'trace'
 
-  const creds = await redis.get('creds')
+  const creds = await redis.get(`zap:${shard}:creds`)
 
   if (creds) {
     const authInfo = JSON.parse(creds)

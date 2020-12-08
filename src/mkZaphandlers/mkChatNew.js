@@ -2,12 +2,13 @@
  * when a new chat is added
  * on (event: 'chat-new', listener: (chat: WAChat) => void): this
  */
-const chatNew = ({ redis, connP }) => async (chat) => {
+const chatNew = ({ shard, redis, connP }) => async (chat) => {
   console.log('event chat-new')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'chat-new', data: chat }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'chat-new', data: chat }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

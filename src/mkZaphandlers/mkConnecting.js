@@ -2,12 +2,13 @@
  *  when the connection is opening
  * on (event: 'connecting', listener: () => void): this
  */
-const connecting = ({ redis, connP }) => async () => {
+const connecting = ({ shard, redis, connP }) => async () => {
   console.log('event connecting')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'connecting', data: null }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'connecting', data: null }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

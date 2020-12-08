@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] zap:petzap
+- [x] zap:jid: namespace
 - [x] logs once
-- [ ] drummer on DO
-- [ ] sendTextMessage
+- [ ] drummer on DO 

@@ -2,12 +2,13 @@
  * when the contacts has received
  * on (event: 'contacts-received', listener: () => void): this
  */
-const contactsReceived = ({ redis, connP }) => async () => {
+const contactsReceived = ({ shard, redis, connP }) => async () => {
   console.log('event contacts-received')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'contacts-received', data: null }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'contacts-received', data: null }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 

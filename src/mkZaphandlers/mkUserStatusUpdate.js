@@ -2,12 +2,13 @@
  * when a user's status is updated
  * on (event: 'user-status-update', listener: (update: {jid: string, status?: string}) => void): this
  */
-const userStatusUpdate = ({ redis, connP }) => async (update) => {
+const userStatusUpdate = ({ shard, redis, connP }) => async (update) => {
   console.log('event user-status-update')
 
+  const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
-  pipeline.lpush('log:baileys:test', JSON.stringify({ event: 'user-status-update', data: update }))
-  pipeline.ltrim('log:baileys:test', 0, 99)
+  pipeline.lpush(logKey, JSON.stringify({ event: 'user-status-update', data: update }))
+  pipeline.ltrim(logKey, 0, 99)
   await pipeline.exec()
 }
 
