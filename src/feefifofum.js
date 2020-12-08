@@ -73,3 +73,7 @@ const feefifofum = ({ placa = 'plutocharon851557', redis, connP, redisB }) => {
 }
 
 module.exports = feefifofum
+
+// const redisB = new Redis(redisConn)
+// const { fifoMe } = feefifofum({ redis, connP, redisB })
+// resolverFifomePBOX(fifoMe)

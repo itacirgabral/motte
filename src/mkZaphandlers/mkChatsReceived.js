@@ -2,7 +2,7 @@
  * when chats are sent by WA, and when all messages are received from WhatsApp
  * on (event: 'chats-received', (update: {hasNewChats?: boolean, hasReceivedLastMessage?: boolean}) => void): this
  */
-const chatsReceived = ({ wsP, redis, connP }) => async ({ hasNewChats, hasReceivedLastMessage }) => {
+const chatsReceived = ({ redis, connP }) => async ({ hasNewChats, hasReceivedLastMessage }) => {
   console.log('event chats-received')
   const conn = await connP
 
@@ -16,19 +16,6 @@ const chatsReceived = ({ wsP, redis, connP }) => async ({ hasNewChats, hasReceiv
   pipeline.sadd('contacts', knoweds)
 
   await pipeline.exec()
-
-  const ws = await wsP
-  ws.send(JSON.stringify({
-    t: 7,
-    d: {
-      topic: 'chat',
-      event: 'message',
-      data: {
-        username: 'zapguiado',
-        body: JSON.stringify({ event: 'chat-new', data: { event: 'chat-new', data: { hasNewChats, hasReceivedLastMessage } } })
-      }
-    }
-  }))
 }
 
 module.exports = chatsReceived
