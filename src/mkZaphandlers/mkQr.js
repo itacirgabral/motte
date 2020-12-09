@@ -3,8 +3,6 @@
  * on (event: 'qr', listener: (qr: string) => void): this
  */
 const qr = ({ shard, redis, connP }) => async (qr) => {
-  console.log('event qr')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'qr', data: qr }))

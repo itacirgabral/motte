@@ -3,8 +3,6 @@
  * on (event: 'ws-close', listener: (err: {reason?: DisconnectReason | string}) => void): this
  */
 const wsClose = ({ shard, redis, connP }) => async (err) => {
-  console.log('event ws-close')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'ws-close', data: err }))

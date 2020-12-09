@@ -3,7 +3,6 @@
  * on (event: 'chats-received', (update: {hasNewChats?: boolean, hasReceivedLastMessage?: boolean}) => void): this
  */
 const chatsReceived = ({ shard, redis, connP }) => async ({ hasNewChats, hasReceivedLastMessage }) => {
-  console.log('event chats-received')
   const conn = await connP
 
   const logKey = `zap:${shard}:log`

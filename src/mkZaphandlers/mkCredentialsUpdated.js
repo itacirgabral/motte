@@ -3,7 +3,6 @@
  * on (event: 'credentials-updated', listener: (auth: AuthenticationCredentials) => void): this
  */
 const credentialsUpdated = ({ shard, redis, connP }) => async (auth) => {
-  console.log('event credentials-updated')
   const creds = {
     clientID: auth.clientID,
     serverToken: auth.serverToken,

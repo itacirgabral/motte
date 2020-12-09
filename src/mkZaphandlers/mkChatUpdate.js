@@ -3,8 +3,6 @@
  * on (event: 'chat-update', listener: (chat: Partial<WAChat> & { jid: string }) => void): this
  */
 const chatUpdate = ({ shard, redis, connP }) => async (chat) => {
-  console.log('event chat-update')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'chat-update', data: chat }))

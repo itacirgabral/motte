@@ -3,8 +3,6 @@
  * on (event: 'group-update', listener: (update: Partial<WAGroupMetadata> & {jid: string, actor?: string}) => void): this
  */
 const groupUpdate = ({ shard, redis, connP }) => async (user) => {
-  console.log('event group-update')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'group-update', data: user }))

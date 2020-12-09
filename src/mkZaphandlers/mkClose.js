@@ -3,8 +3,6 @@
  * on (event: 'close', listener: (err: {reason?: DisconnectReason | string, isReconnecting: boolean}) => void): this
  */
 const close = ({ shard, redis, connP }) => async (err) => {
-  console.log('event close')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'close', data: err }))

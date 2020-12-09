@@ -3,8 +3,6 @@
  * on (event: 'group-participants-update', listener: (update: {jid: string, participants: string[], actor?: string, action: WAParticipantAction}) => void): this
  */
 const groupParticipantsUpdate = ({ shard, redis, connP }) => async (user) => {
-  console.log('event group-participants-update')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'group-participants-update', data: user }))

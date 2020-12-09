@@ -3,8 +3,6 @@
  * on (event: 'chats-update', listener: (chats: WAChatUpdate[]) => void): this
  */
 const chatsUpdate = ({ shard, redis, connP }) => async (chats) => {
-  console.log('event chats-update')
-
   const logKey = `zap:${shard}:log`
   const pipeline = redis.pipeline()
   pipeline.lpush(logKey, JSON.stringify({ event: 'chats-update', data: chats }))
