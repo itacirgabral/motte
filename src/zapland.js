@@ -31,7 +31,6 @@ const zapland = async ({
 
   if (creds) {
     const authInfo = JSON.parse(creds)
-    console.dir(authInfo)
     conn.loadAuthInfo(authInfo)
   }
 

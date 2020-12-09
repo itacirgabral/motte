@@ -19,5 +19,5 @@ const zaphandlers = mkZaphandlers({ shard, redis, connP: connPBox })
 const connP = zapland({ shard, zaphandlers, redis })
 resolverConnPBox(connP)
 
-const drummer = fifoDrumer({ shard, redis, connP, redisB })
-console.log(JSON.stringify(drummer, null, 2))
+const drummer1 = fifoDrumer({ shard, redis, connP, redisB })
+console.log(drummer1.playing ? 'drummer 1 OK' : 'NO drummer 1')
