@@ -1,5 +1,8 @@
 const { WAConnection } = require('@adiwajshing/baileys')
 
+const description = process.env.APP_DESCRIPTION || 'Baileys'
+const version = process.env.APP_VERSION || '3.3.1'
+
 const zapland = async ({
   shard,
   zaphandlers: {
@@ -26,6 +29,7 @@ const zapland = async ({
 }) => {
   const conn = new WAConnection()
   // conn.logger.level = 'trace'
+  conn.browserDescription = [description, 'Chrome', version]
 
   const creds = await redis.get(`zap:${shard}:creds`)
 
