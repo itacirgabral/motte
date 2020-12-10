@@ -12,9 +12,12 @@ const credentialsUpdated = ({ shard, redis, connP }) => async (auth) => {
   }
 
   const logKey = `zap:${shard}:log`
+  const newsKey = `zap:${shard}:news`
+  const json = JSON.stringify({ event: 'credentials-updated', data: creds })
   const pipeline = redis.pipeline()
-  pipeline.lpush(logKey, JSON.stringify({ event: 'credentials-updated', data: creds }))
+  pipeline.lpush(logKey, json)
   pipeline.ltrim(logKey, 0, 99)
+  pipeline.publish(newsKey, json)
 
   const credentialsUpdated = JSON.stringify(creds)
   const credsKey = `zap:${shard}:creds`

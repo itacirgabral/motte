@@ -5,9 +5,12 @@
 const chatNew = ({ shard, redis, connP }) => async (chat) => {
   const logKey = `zap:${shard}:log`
   const contactsKey = `zap:${shard}:contacts`
+  const newsKey = `zap:${shard}:news`
+  const json = JSON.stringify({ event: 'chat-new', data: chat })
   const pipeline = redis.pipeline()
-  pipeline.lpush(logKey, JSON.stringify({ event: 'chat-new', data: chat }))
+  pipeline.lpush(logKey, json)
   pipeline.ltrim(logKey, 0, 99)
+  pipeline.publish(newsKey, json)
 
   if (chat.jid.split('@s.whatsapp.net').length === 2) {
     pipeline.sadd(contactsKey, chat.jid)

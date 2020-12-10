@@ -6,9 +6,12 @@ const chatsReceived = ({ shard, redis, connP }) => async ({ hasNewChats, hasRece
   const conn = await connP
 
   const logKey = `zap:${shard}:log`
+  const newsKey = `zap:${shard}:news`
+  const json = JSON.stringify({ event: 'chat-new', data: { hasNewChats, hasReceivedLastMessage } })
   const pipeline = redis.pipeline()
-  pipeline.lpush(logKey, JSON.stringify({ event: 'chat-new', data: { hasNewChats, hasReceivedLastMessage } }))
+  pipeline.lpush(logKey, json)
   pipeline.ltrim(logKey, 0, 99)
+  pipeline.publish(newsKey, json)
 
   const knoweds = conn.chats.array
     .filter(({ jid = '' }) => jid.split('@s.whatsapp.net').length === 2)

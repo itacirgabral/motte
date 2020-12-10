@@ -4,9 +4,12 @@
  */
 const chatsUpdate = ({ shard, redis, connP }) => async (chats) => {
   const logKey = `zap:${shard}:log`
+  const newsKey = `zap:${shard}:news`
+  const json = JSON.stringify({ event: 'chats-update', data: chats })
   const pipeline = redis.pipeline()
-  pipeline.lpush(logKey, JSON.stringify({ event: 'chats-update', data: chats }))
+  pipeline.lpush(logKey, json)
   pipeline.ltrim(logKey, 0, 99)
+  pipeline.publish(newsKey, json)
   await pipeline.exec()
 }
 
