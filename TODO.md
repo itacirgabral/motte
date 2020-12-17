@@ -1,9 +1,7 @@
 # TODO
 
-## procedimento de ancoragem
-- [ ] pubsub slot waiter
-- [ ] mooring qrcode
-- [ ] swap :slot: -> :jid:
+## DEZ 3
+Motte seguindo as balizas do flanelinha, o objetivo é chegar ao `shard`
 
-- [ ] mooring creds
-- [ ] swap force
+- [x] iniciar compativel com traffic wand
+- [x] 'grabcreds'

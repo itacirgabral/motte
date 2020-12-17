@@ -1,6 +1,7 @@
 
 const Redis = require('ioredis')
 
+const getshard = require('./getshard')
 const fifoDrumer = require('./fifoDrumer')
 const zapland = require('./zapland')
 const mkZaphandlers = require('./mkZaphandlers')
@@ -14,10 +15,13 @@ const connPBox = new Promise((resolve, reject) => {
   resolverConnPBox = resolve
 })
 
-const shard = process.env.SHARD
-const zaphandlers = mkZaphandlers({ shard, redis, connP: connPBox })
-const connP = zapland({ shard, zaphandlers, redis })
-resolverConnPBox(connP)
+getshard({ redis, redisB }).then(shard => {
+  console.log(`shard=${shard}`)
 
-const drummer1 = fifoDrumer({ shard, redis, connP, redisB })
-console.log(drummer1.playing ? 'drummer 1 OK' : 'NO drummer 1')
+  const zaphandlers = mkZaphandlers({ shard, redis, connP: connPBox })
+  const connP = zapland({ shard, zaphandlers, redis })
+  resolverConnPBox(connP)
+
+  const drummer1 = fifoDrumer({ shard, redis, connP, redisB })
+  console.log(drummer1.playing ? 'drummer 1 OK' : 'NO drummer 1')
+})

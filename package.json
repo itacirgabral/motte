@@ -5,8 +5,8 @@
   "repository": "https://github.com/itacirgabral/motte",
   "license": "MIT",
   "scripts": {
-    "dev": "npx nodemon --watch ./src/ -r dotenv/config ./src/index.js",
-    "debug": "npx nodemon --inspect=0.0.0.0:9229 --watch ./src/ -r dotenv/config ./src/index.js",
+    "dev": "npx node-dev -r dotenv/config ./src/index.js",
+    "debug": "npx node-dev --inspect=0.0.0.0:9229 -r dotenv/config ./src/index.js",
     "start": "node -r dotenv/config ./src/index.js"
   },
   "devDependencies": {
@@ -16,7 +16,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
-    "nodemon": "^2.0.6"
+    "node-dev": "^6.2.0"
   },
   "dependencies": {
     "@adiwajshing/baileys": "^3.3.1",
