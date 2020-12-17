@@ -1,7 +1,7 @@
 const newskey = 'zap:panoptics:slotnews'
 const hardid = process.env.HARDID
 
-const getshard = ({ redis, redisB }) => new Promise((resolve, reject) => {
+const getshard = ({ redis, redisW }) => new Promise((resolve, reject) => {
   const wannaconn = JSON.stringify({
     type: 'wannaconn',
     hardid
@@ -9,12 +9,12 @@ const getshard = ({ redis, redisB }) => new Promise((resolve, reject) => {
 
   let intervalId = 0
 
-  redisB.subscribe(newskey, (err, _count) => {
+  redisW.subscribe(newskey, (err, _count) => {
     if (!err) {
-      redisB.on('message', async (_channel, message) => {
+      redisW.on('message', async (_channel, message) => {
         const { type, ...leftover } = JSON.parse(message)
         if (type === 'grabcreds' && hardid === leftover.hardid) {
-          redisB.unsubscribe(newskey)
+          redisW.unsubscribe(newskey)
           clearInterval(intervalId)
           resolve(leftover.shard)
         }

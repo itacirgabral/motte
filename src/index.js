@@ -9,13 +9,14 @@ const mkZaphandlers = require('./mkZaphandlers')
 const redisConn = process.env.REDIS_CONN
 const redis = new Redis(redisConn)
 const redisB = new Redis(redisConn)
+const redisW = new Redis(redisConn)
 
 let resolverConnPBox
 const connPBox = new Promise((resolve, reject) => {
   resolverConnPBox = resolve
 })
 
-getshard({ redis, redisB }).then(shard => {
+getshard({ redis, redisW }).then(shard => {
   console.log(`shard=${shard}`)
 
   const zaphandlers = mkZaphandlers({ shard, redis, connP: connPBox })
