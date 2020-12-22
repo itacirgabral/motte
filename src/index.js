@@ -1,28 +1,71 @@
-
 const Redis = require('ioredis')
 
-const getshard = require('./getshard')
-const fifoDrumer = require('./fifoDrumer')
-const zapland = require('./zapland')
-const mkZaphandlers = require('./mkZaphandlers')
-
 const redisConn = process.env.REDIS_CONN
-const redis = new Redis(redisConn)
-const redisB = new Redis(redisConn)
-const redisW = new Redis(redisConn)
+const myhardid = process.env.HARDID
+const healthreportinterval = process.env.HEALTHREPORTINTERVAL
+let healthreportintervalid = 0
+const panoptickey = 'zap:panoptic'
+const catcherrKey = 'zap:catcherr'
 
-let resolverConnPBox
-const connPBox = new Promise((resolve, reject) => {
-  resolverConnPBox = resolve
-})
+const patchpanel = new Map()
 
-getshard({ redis, redisW }).then(shard => {
-  console.log(`shard=${shard}`)
+const actbooting = JSON.stringify({ type: 'booting', hardid: myhardid, timestamp: Date.now() })
+const mkactbigerr = ({ err }) => JSON.stringify({ type: 'bigerr', hardid: myhardid, err, timestamp: Date.now() })
+const mkhealthreport = () => JSON.stringify({ type: 'healthreport', hardid: myhardid, totalconnections: patchpanel.size, timestamp: Date.now() })
 
-  const zaphandlers = mkZaphandlers({ shard, redis, connP: connPBox })
-  const connP = zapland({ shard, zaphandlers, redis })
-  resolverConnPBox(connP)
+const speaker = new Redis(redisConn)
+const listener = new Redis(redisConn)
 
-  const drummer1 = fifoDrumer({ shard, redis, connP, redisB })
-  console.log(drummer1.playing ? 'drummer 1 OK' : 'NO drummer 1')
-})
+;(async () => {
+  let sisyphus = true
+  while (sisyphus) {
+    try {
+      // open the while loop
+      sisyphus = false
+      await speaker.publish(panoptickey, actbooting)
+
+      // promise gate
+      let gracefuldownresolver
+      const gracefuldownpromise = new Promise((resolve, reject) => {
+        gracefuldownresolver = resolve
+      })
+
+      // screw on the redis
+      await listener.subscribe(panoptickey)
+      listener.on('message', (channel, message) => {
+        const { hardid, type, ...leftover } = JSON.parse(message)
+
+        // is it to me?
+        if (hardid === myhardid) {
+          switch (type) {
+            case 'gracefuldown':
+              clearInterval(healthreportintervalid)
+              gracefuldownresolver()
+              break
+          }
+        }
+      })
+
+      // I'm OK bro
+      await speaker.publish(panoptickey, mkhealthreport())
+      healthreportintervalid = setInterval(async () => {
+        await speaker.publish(panoptickey, mkhealthreport())
+      }, Number(healthreportinterval))
+
+      await gracefuldownpromise
+    } catch (err) {
+      // lock the while loop
+      sisyphus = true
+
+      const actbigerr = mkactbigerr({ err })
+      const warnlogs = await Promise.all([
+        speaker.publish(panoptickey, actbigerr),
+        speaker.lpush(catcherrKey, actbigerr)
+      ])
+
+      console.error(warnlogs)
+    }
+  }
+
+  process.exit(0)
+})()

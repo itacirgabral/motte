@@ -4,7 +4,3 @@
 # WIP
 THIS IS **NOT** FOR PRODUCTION. Probably using it is illegal about WhatsApp® term of use policy.
 
-# MOTTE'S KING
-```bash
-docker run -d --publish 3333:3333 itacirgabral/adoniswebsocketdemo:0.0.1
-```
