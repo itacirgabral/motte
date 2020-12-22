@@ -1,5 +1,9 @@
 const Redis = require('ioredis')
 
+const mkZaphandlers = require('./mkZaphandlers')
+const zapland = require('./zapland')
+const fifoDrumer = require('./fifoDrumer')
+
 const redisConn = process.env.REDIS_CONN
 const myhardid = process.env.HARDID
 const healthreportinterval = process.env.HEALTHREPORTINTERVAL
@@ -16,7 +20,7 @@ const mkhealthreport = () => JSON.stringify({ type: 'healthreport', hardid: myha
 const speaker = new Redis(redisConn)
 const listener = new Redis(redisConn)
 
-;(async () => {
+const trafficwand = async () => {
   let sisyphus = true
   while (sisyphus) {
     try {
@@ -42,6 +46,37 @@ const listener = new Redis(redisConn)
               clearInterval(healthreportintervalid)
               gracefuldownresolver()
               break
+            case 'connect':
+              if (!patchpanel.has(leftover.shard)) {
+                let resolverConnPBox
+                const connPBox = new Promise((resolve, reject) => {
+                  resolverConnPBox = resolve
+                })
+
+                const zaphandlers = mkZaphandlers({ shard: leftover.shard, redis: speaker, connP: connPBox })
+                const connP = zapland({ shard: leftover.shard, zaphandlers, redis: speaker })
+                resolverConnPBox(connP)
+
+                const drummer = fifoDrumer({ shard: leftover.shard, redis: speaker, connP, redisB: listener.duplicate() })
+
+                patchpanel.set(leftover.shard, {
+                  drummer,
+                  connP
+                })
+                console.log(`connect ${leftover.shard}`)
+              }
+              break
+            case 'disconnect':
+              if (patchpanel.has(leftover.shard)) {
+                const { connP } = patchpanel.get(leftover.shard)
+                patchpanel.delete(leftover.shard)
+                connP
+                  .then(conn => {
+                    conn.close()
+                    console.log(`disconnect ${leftover.shard}`)
+                  })
+              }
+              break
           }
         }
       })
@@ -52,7 +87,9 @@ const listener = new Redis(redisConn)
         await speaker.publish(panoptickey, mkhealthreport())
       }, Number(healthreportinterval))
 
+      // promise gate door
       await gracefuldownpromise
+      console.log('gracefuldown')
     } catch (err) {
       // lock the while loop
       sisyphus = true
@@ -68,4 +105,6 @@ const listener = new Redis(redisConn)
   }
 
   process.exit(0)
-})()
+}
+
+trafficwand()
