@@ -59,23 +59,3 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 }
 
 module.exports = fifoDrumer
-
-// const redisB = new Redis(redisConn)
-// const { fifoMe } = feefifofum({ shard, redis, connP, redisB })
-// resolverFifomePBOX(fifoMe)
-/*
-{
-    // send the bread to the giant fifo
-    fifoMe: async ({ jid, msg }) => {
-      const fifoBread = JSON.stringify({
-        type: 'textMessage_v001',
-        jid,
-        msg
-      })
-      await redis.lpush(fifo, fifoBread)
-
-      // wakeup the drummer
-      fifoDrumer()
-    }
-  }
-*/
