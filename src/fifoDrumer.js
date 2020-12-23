@@ -16,8 +16,9 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
   const statsKey = `zap:${shard}:stats`
   const lastsentmessagetimestamp = 'lastsentmessagetimestamp'
-  const sortmean = 'sortmean'
-  const longmean = 'longmean'
+  const totalsentmessage = 'totalsentmessage'
+  const sortmeandelta = 'sortmeandelta'
+  const longmeandelta = 'longmeandelta'
 
   const healthcare = {
     playing: true,
@@ -59,16 +60,17 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           pipeline.ltrim(lastRawKey, 0, -2) // 0
           pipeline.ltrim(lastBakedKey, 0, -2) // 1
           pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish) // 2
-          pipeline.hget(statsKey, sortmean) // 3
-          pipeline.hget(statsKey, longmean) // 4
+          pipeline.hget(statsKey, sortmeandelta) // 3
+          pipeline.hget(statsKey, longmeandelta) // 4
           const [, , , [, longDelta], [, sortDelta]] = await pipeline.exec()
 
           const newSortDelta = (delta + (Number(sortDelta) || delta)) / 2
           const newLongDelta = (delta + 4 * (Number(longDelta) || delta)) / 5
 
           const pipelineDelta = redis.pipeline()
-          pipelineDelta.hset(statsKey, sortmean, Number.isInteger(newSortDelta) ? newSortDelta : delta)
-          pipelineDelta.hset(statsKey, longmean, Number.isInteger(newLongDelta) ? newLongDelta : delta)
+          pipelineDelta.hset(statsKey, sortmeandelta, Number.isInteger(newSortDelta) ? newSortDelta : delta)
+          pipelineDelta.hset(statsKey, longmeandelta, Number.isInteger(newLongDelta) ? newLongDelta : delta)
+          pipelineDelta.hincrby(statsKey, totalsentmessage, 1)
 
           await pipelineDelta.exec()
         }
