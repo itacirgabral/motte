@@ -14,6 +14,11 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
   const lastRawKey = `zap:${shard}:last:rawBread`
   const lastBakedKey = `zap:${shard}:last:bakedBread`
 
+  const statsKey = `zap:${shard}:stats`
+  const lastsentmessagetimestamp = 'lastsentmessagetimestamp'
+  const sortmean = 'sortmean'
+  const longmean = 'longmean'
+
   const healthcare = {
     playing: true,
     fifoRawKey,
@@ -39,17 +44,33 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
         conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
+
+        const timestampStart = Date.now()
         conn.sendMessage(jid, msg, MessageType.text)
         conn.updatePresence(jid, Presence.available)
 
         whowewaitfor = await redisB.brpoplpush(fifoBakedKey, lastBakedKey, 0)
         const { type, ...crumb2 } = JSON.parse(whowewaitfor)
         if (type === 'textMessage_v001' && jid === crumb2.jid && msg === crumb2.msg) {
-          // cleanup
+          const timestampFinish = Date.now()
+          const delta = timestampFinish - timestampStart
+
           const pipeline = redis.pipeline()
-          pipeline.ltrim(lastRawKey, 0, -2)
-          pipeline.ltrim(lastBakedKey, 0, -2)
-          await pipeline.exec()
+          pipeline.ltrim(lastRawKey, 0, -2) // 0
+          pipeline.ltrim(lastBakedKey, 0, -2) // 1
+          pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish) // 2
+          pipeline.hget(statsKey, sortmean) // 3
+          pipeline.hget(statsKey, longmean) // 4
+          const [, , , [, longDelta], [, sortDelta]] = await pipeline.exec()
+
+          const newSortDelta = (delta + (Number(sortDelta) || delta)) / 2
+          const newLongDelta = (delta + 4 * (Number(longDelta) || delta)) / 5
+
+          const pipelineDelta = redis.pipeline()
+          pipelineDelta.hset(statsKey, sortmean, Number.isInteger(newSortDelta) ? newSortDelta : delta)
+          pipelineDelta.hset(statsKey, longmean, Number.isInteger(newLongDelta) ? newLongDelta : delta)
+
+          await pipelineDelta.exec()
         }
       }
     }
