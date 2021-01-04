@@ -35,6 +35,7 @@ const zapland = async ({
 
   if (creds) {
     const authInfo = JSON.parse(creds)
+    conn.connectOptions.alwaysUseTakeover = true
     conn.loadAuthInfo(authInfo)
   }
 
