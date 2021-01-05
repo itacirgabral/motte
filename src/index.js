@@ -1,4 +1,14 @@
 const Redis = require('ioredis')
+const fetch = require('node-fetch')
+
+/*
+SOLDA EMPTY BAILEYS
+*/
+const { WAConnection } = require("@adiwajshing/baileys")
+let WA
+/*
+SOLDA EMPTY BAILEYS
+*/
 
 const mkZaphandlers = require('./mkZaphandlers')
 const zapland = require('./zapland')
@@ -12,6 +22,7 @@ const panoptickey = 'zap:panoptic'
 const catcherrKey = 'zap:catcherr'
 
 const patchpanel = new Map()
+const zigotopanel = new Map()
 
 const actbooting = JSON.stringify({ type: 'booting', hardid: myhardid, timestamp: Date.now() })
 const mkactbigerr = ({ err }) => JSON.stringify({ type: 'bigerr', hardid: myhardid, err, timestamp: Date.now() })
@@ -76,6 +87,45 @@ const trafficwand = async () => {
                     console.log(`disconnect ${leftover.shard}`)
                   })
               }
+              break
+            case 'signupconnection':
+              /*
+              SOLDA EMPTY BAILEYS
+              */
+              console.log(leftover)
+              WA = new WAConnection()
+              // WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
+              WA.on('qr', async qr => {
+                await fetch(leftover.url, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ qr })
+                })
+              })
+              WA.on('credentials-updated', async auth => {
+                console.log('credentials-updated')
+                const creds = JSON.stringify({
+                  clientID: auth.clientID,
+                  serverToken: auth.serverToken,
+                  clientToken: auth.clientToken,
+                  encKey: auth.encKey.toString('base64'),
+                  macKey: auth.macKey.toString('base64')
+                })
+
+                console.log(`creds=${creds}`)
+              })
+              WA.on('open', async () => {
+                setTimeout(() => {
+                  WA.close()
+                })
+              }, 20000)
+
+              WA.connect().catch(console.error)
+              /*
+              SOLDA EMPTY BAILEYS
+              */
               break
           }
         }
