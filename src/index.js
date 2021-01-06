@@ -1,7 +1,5 @@
 const Redis = require('ioredis')
 
-
-
 const mkZaphandlers = require('./mkZaphandlers')
 const zapland = require('./zapland')
 const fifoDrumer = require('./fifoDrumer')
@@ -31,7 +29,7 @@ const jsonwebtoken = require('jsonwebtoken')
 const { WAConnection } = require('@adiwajshing/baileys')
 let WA
 const jwtsecret = process.env.JWT_SECRET
-const mkcredskey = shard => `zap:teste_${shard}:creds`
+const mkcredskey = shard => `zap:${shard}:creds`
 const redis = new Redis(redisConn)
 /*
 SOLDA EMPTY BAILEYS
