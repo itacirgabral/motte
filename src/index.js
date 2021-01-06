@@ -27,7 +27,6 @@ SOLDA EMPTY BAILEYS
 const fetch = require('node-fetch')
 const jsonwebtoken = require('jsonwebtoken')
 const { WAConnection } = require('@adiwajshing/baileys')
-let WA
 const jwtsecret = process.env.JWT_SECRET
 const mkcredskey = shard => `zap:${shard}:creds`
 const redis = new Redis(redisConn)
@@ -97,9 +96,13 @@ const trafficwand = async () => {
               SOLDA EMPTY BAILEYS
               */
               if (!zigotopanel.has(leftover.shard)) {
-                // zigotopanel.set()
+                const timeoutid = setTimeout(() => {
+                  WA.close()
+                  zigotopanel.delete(leftover.shard)
+                }, 20000)
+                const WA = new WAConnection()
+                zigotopanel.set(leftover.shard, { WA })
                 console.log(leftover)
-                WA = new WAConnection()
                 WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
                 WA.on('qr', async qr => {
                   await fetch(leftover.url, {
@@ -126,9 +129,10 @@ const trafficwand = async () => {
                 WA.on('open', async () => {
                   if (leftover.shard === WA.user.jid.split('@s.whatsapp.net')[0]) {
                     setTimeout(async () => {
+                      clearTimeout(timeoutid)
                       WA.close()
-                      // zigotopanel.delete()
-                    }, 20000)
+                      zigotopanel.delete(leftover.shard)
+                    }, 8000)
                     await redis.set(mkcredskey(leftover.shard), WA.creds)
                     const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
                     await fetch(leftover.url, {
