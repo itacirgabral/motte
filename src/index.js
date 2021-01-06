@@ -1,14 +1,6 @@
 const Redis = require('ioredis')
-const fetch = require('node-fetch')
 
-/*
-SOLDA EMPTY BAILEYS
-*/
-const { WAConnection } = require("@adiwajshing/baileys")
-let WA
-/*
-SOLDA EMPTY BAILEYS
-*/
+
 
 const mkZaphandlers = require('./mkZaphandlers')
 const zapland = require('./zapland')
@@ -30,6 +22,20 @@ const mkhealthreport = () => JSON.stringify({ type: 'healthreport', hardid: myha
 
 const speaker = new Redis(redisConn)
 const listener = new Redis(redisConn)
+
+/*
+SOLDA EMPTY BAILEYS
+*/
+const fetch = require('node-fetch')
+const jsonwebtoken = require('jsonwebtoken')
+const { WAConnection } = require('@adiwajshing/baileys')
+let WA
+const jwtsecret = process.env.JWT_SECRET
+const mkcredskey = shard => `zap:teste_${shard}:creds`
+const redis = new Redis(redisConn)
+/*
+SOLDA EMPTY BAILEYS
+*/
 
 const trafficwand = async () => {
   let sisyphus = true
@@ -92,37 +98,61 @@ const trafficwand = async () => {
               /*
               SOLDA EMPTY BAILEYS
               */
-              console.log(leftover)
-              WA = new WAConnection()
-              // WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
-              WA.on('qr', async qr => {
-                await fetch(leftover.url, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ qr })
+              if (!zigotopanel.has(leftover.shard)) {
+                // zigotopanel.set()
+                console.log(leftover)
+                WA = new WAConnection()
+                WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
+                WA.on('qr', async qr => {
+                  await fetch(leftover.url, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ qr })
+                  })
                 })
-              })
-              WA.on('credentials-updated', async auth => {
-                console.log('credentials-updated')
-                const creds = JSON.stringify({
-                  clientID: auth.clientID,
-                  serverToken: auth.serverToken,
-                  clientToken: auth.clientToken,
-                  encKey: auth.encKey.toString('base64'),
-                  macKey: auth.macKey.toString('base64')
+                WA.on('credentials-updated', async auth => {
+                  console.log('credentials-updated')
+                  const creds = JSON.stringify({
+                    clientID: auth.clientID,
+                    serverToken: auth.serverToken,
+                    clientToken: auth.clientToken,
+                    encKey: auth.encKey.toString('base64'),
+                    macKey: auth.macKey.toString('base64')
+                  })
+
+                  WA.creds = creds
+                  console.log(`creds=${creds}`)
+                })
+                WA.on('open', async () => {
+                  if (leftover.shard === WA.user.jid.split('@s.whatsapp.net')[0]) {
+                    setTimeout(async () => {
+                      WA.close()
+                      // zigotopanel.delete()
+                    }, 20000)
+                    await redis.set(mkcredskey(leftover.shard), WA.creds)
+                    const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
+                    await fetch(leftover.url, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ jwt })
+                    })
+                  } else {
+                    await fetch(leftover.url, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ error: true, message: 'mismatch numbers' })
+                    })
+                  }
                 })
 
-                console.log(`creds=${creds}`)
-              })
-              WA.on('open', async () => {
-                setTimeout(() => {
-                  WA.close()
-                })
-              }, 20000)
-
-              WA.connect().catch(console.error)
+                WA.connect().catch(console.error)
+              }
               /*
               SOLDA EMPTY BAILEYS
               */
