@@ -111,7 +111,7 @@ const trafficwand = async () => {
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ qr })
-                  })
+                  }).catch(() => {})
                 })
                 WA.on('credentials-updated', async auth => {
                   console.log('credentials-updated')
@@ -141,7 +141,7 @@ const trafficwand = async () => {
                         'Content-Type': 'application/json'
                       },
                       body: JSON.stringify({ jwt })
-                    })
+                    }).catch(() => {})
                   } else {
                     await fetch(leftover.url, {
                       method: 'POST',
@@ -149,7 +149,7 @@ const trafficwand = async () => {
                         'Content-Type': 'application/json'
                       },
                       body: JSON.stringify({ error: true, message: 'mismatch numbers' })
-                    })
+                    }).catch(() => {})
                   }
                 })
 
