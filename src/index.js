@@ -3,6 +3,7 @@ const Redis = require('ioredis')
 const mkZaphandlers = require('./mkZaphandlers')
 const zapland = require('./zapland')
 const fifoDrumer = require('./fifoDrumer')
+const zygote = require('./zygote')
 
 const redisConn = process.env.REDIS_CONN
 const myhardid = process.env.HARDID
@@ -12,7 +13,6 @@ const panoptickey = 'zap:panoptic'
 const catcherrKey = 'zap:catcherr'
 
 const patchpanel = new Map()
-const zigotopanel = new Map()
 
 const actbooting = JSON.stringify({ type: 'booting', hardid: myhardid, timestamp: Date.now() })
 const mkactbigerr = ({ err }) => JSON.stringify({ type: 'bigerr', hardid: myhardid, err, timestamp: Date.now() })
@@ -21,18 +21,6 @@ const mkhealthreport = () => JSON.stringify({ type: 'healthreport', hardid: myha
 const speaker = new Redis(redisConn)
 const listener = new Redis(redisConn)
 
-/*
-SOLDA EMPTY BAILEYS
-*/
-const fetch = require('node-fetch')
-const jsonwebtoken = require('jsonwebtoken')
-const { WAConnection } = require('@adiwajshing/baileys')
-const jwtsecret = process.env.JWT_SECRET
-const mkcredskey = shard => `zap:${shard}:creds`
-const redis = new Redis(redisConn)
-/*
-SOLDA EMPTY BAILEYS
-*/
 
 const trafficwand = async () => {
   let sisyphus = true
@@ -92,72 +80,7 @@ const trafficwand = async () => {
               }
               break
             case 'signupconnection':
-              /*
-              SOLDA EMPTY BAILEYS
-              */
-              if (!zigotopanel.has(leftover.shard)) {
-                const timeoutid = setTimeout(() => {
-                  WA.close()
-                  zigotopanel.delete(leftover.shard)
-                }, 60000)
-                const WA = new WAConnection()
-                zigotopanel.set(leftover.shard, { WA })
-                console.log(leftover)
-                WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
-                WA.on('qr', async qr => {
-                  await fetch(leftover.url, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ qr })
-                  }).catch(() => {})
-                })
-                WA.on('credentials-updated', async auth => {
-                  console.log('credentials-updated')
-                  const creds = JSON.stringify({
-                    clientID: auth.clientID,
-                    serverToken: auth.serverToken,
-                    clientToken: auth.clientToken,
-                    encKey: auth.encKey.toString('base64'),
-                    macKey: auth.macKey.toString('base64')
-                  })
-
-                  WA.creds = creds
-                  console.log(`creds=${creds}`)
-                })
-                WA.on('open', async () => {
-                  if (leftover.shard === WA.user.jid.split('@s.whatsapp.net')[0]) {
-                    setTimeout(async () => {
-                      clearTimeout(timeoutid)
-                      WA.close()
-                      zigotopanel.delete(leftover.shard)
-                    }, 8000)
-                    await redis.set(mkcredskey(leftover.shard), WA.creds)
-                    const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
-                    await fetch(leftover.url, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({ jwt })
-                    }).catch(() => {})
-                  } else {
-                    await fetch(leftover.url, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({ error: true, message: 'mismatch numbers' })
-                    }).catch(() => {})
-                  }
-                })
-
-                WA.connect().catch(console.error)
-              }
-              /*
-              SOLDA EMPTY BAILEYS
-              */
+              zygote({ leftover })
               break
           }
         }
