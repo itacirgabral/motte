@@ -99,7 +99,7 @@ const trafficwand = async () => {
                 const timeoutid = setTimeout(() => {
                   WA.close()
                   zigotopanel.delete(leftover.shard)
-                }, 20000)
+                }, 60000)
                 const WA = new WAConnection()
                 zigotopanel.set(leftover.shard, { WA })
                 console.log(leftover)
