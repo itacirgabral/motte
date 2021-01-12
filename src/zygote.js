@@ -46,7 +46,8 @@ const zygote = ({ leftover }) => {
       console.log(`creds=${creds}`)
     })
     WA.on('open', async () => {
-      if (leftover.shard === WA.user.jid.split('@s.whatsapp.net')[0]) {
+      const foundShard = WA.user.jid.split('@s.whatsapp.net')[0]
+      if (leftover.shard === foundShard) {
         setTimeout(async () => {
           clearTimeout(timeoutid)
           WA.close()
@@ -67,7 +68,12 @@ const zygote = ({ leftover }) => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ type: 'error', message: 'mismatch numbers' })
+          body: JSON.stringify({
+            type: 'error',
+            message: 'mismatch numbers',
+            wanted: leftover.shard,
+            found: foundShard
+          })
         }).catch(() => {})
       }
     })
