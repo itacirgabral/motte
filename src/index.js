@@ -21,7 +21,6 @@ const mkhealthreport = () => JSON.stringify({ type: 'healthreport', hardid: myha
 const speaker = new Redis(redisConn)
 const listener = new Redis(redisConn)
 
-
 const trafficwand = async () => {
   let sisyphus = true
   while (sisyphus) {
