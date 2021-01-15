@@ -1,4 +1,5 @@
 const { MessageType, Presence } = require('@adiwajshing/baileys')
+const fs = require('fs')
 const delay = require('./delay')
 /*
 ** Fee-fi-fo-fum,
@@ -73,6 +74,54 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           pipelineDelta.hincrby(statsKey, totalsentmessage, 1)
 
           await pipelineDelta.exec()
+        }
+      }
+
+      if (type === 'documentMessage_v001') {
+        const { jid, path, filename, mimetype, size } = crumb
+        const waittime = 300
+
+        conn = await connP
+
+        conn.updatePresence(jid, Presence.composing)
+        await delay(waittime)
+
+        const timestampStart = Date.now()
+
+        let docfile
+        try {
+          docfile = fs.readFileSync(path)
+        } catch (error) {
+          console.error(error)
+        }
+        if (docfile) {
+          conn.sendMessage(jid, docfile, MessageType.document, { mimetype, filename })
+          conn.updatePresence(jid, Presence.available)
+
+          whowewaitfor = await redisB.brpoplpush(fifoBakedKey, lastBakedKey, 0)
+          const { type, ...crumb2 } = JSON.parse(whowewaitfor)
+          if (type === 'documentMessage_v001' && jid === crumb2.jid && mimetype === crumb2.mimetype) {
+            const timestampFinish = Date.now()
+            const delta = timestampFinish - timestampStart
+
+            const pipeline = redis.pipeline()
+            pipeline.ltrim(lastRawKey, 0, -2) // 0
+            pipeline.ltrim(lastBakedKey, 0, -2) // 1
+            pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish) // 2
+            pipeline.hget(statsKey, sortmeandelta) // 3
+            pipeline.hget(statsKey, longmeandelta) // 4
+            const [, , , [, longDelta], [, sortDelta]] = await pipeline.exec()
+
+            const newSortDelta = (delta + (Number(sortDelta) || delta)) / 2
+            const newLongDelta = (delta + 4 * (Number(longDelta) || delta)) / 5
+
+            const pipelineDelta = redis.pipeline()
+            pipelineDelta.hset(statsKey, sortmeandelta, Number.isInteger(newSortDelta) ? newSortDelta : delta)
+            pipelineDelta.hset(statsKey, longmeandelta, Number.isInteger(newLongDelta) ? newLongDelta : delta)
+            pipelineDelta.hincrby(statsKey, totalsentmessage, 1)
+
+            await pipelineDelta.exec()
+          }
         }
       }
     }
