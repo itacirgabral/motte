@@ -99,6 +99,80 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           }
         }
       }
+
+      if (type === 'audioMessage_v001') {
+        const { jid, path, filename, mimetype, size } = crumb
+        const waittime = 300
+
+        const conn = await connP
+
+        await conn.updatePresence(jid, Presence.composing)
+        await delay(waittime)
+
+        let voicefile
+        try {
+          voicefile = fs.readFileSync(path)
+        } catch (error) {
+          healthcare.playing = false
+          console.error(error)
+        }
+        if (voicefile) {
+          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype, filename })
+            .catch(() => {
+              healthcare.playing = false
+              return false
+            })
+          if (bakedBread) {
+            const timestampFinish = Date.now()
+            await conn.updatePresence(jid, Presence.available)
+            fs.unlinkSync(path)
+            const pipeline = redis.pipeline()
+            pipeline.ltrim(lastRawKey, 0, -2)
+            pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
+            pipeline.hincrby(statsKey, totalmediasize, size)
+            await pipeline.exec()
+          } else {
+            healthcare.playing = false
+          }
+        }
+      }
+
+      if (type === 'imageMessage_v001') {
+        const { jid, path, filename, mimetype, size } = crumb
+        const waittime = 300
+
+        const conn = await connP
+
+        await conn.updatePresence(jid, Presence.composing)
+        await delay(waittime)
+
+        let imgfile
+        try {
+          imgfile = fs.readFileSync(path)
+        } catch (error) {
+          healthcare.playing = false
+          console.error(error)
+        }
+        if (imgfile) {
+          const bakedBread = await conn.sendMessage(jid, imgfile, MessageType.image, { mimetype, filename })
+            .catch(() => {
+              healthcare.playing = false
+              return false
+            })
+          if (bakedBread) {
+            const timestampFinish = Date.now()
+            await conn.updatePresence(jid, Presence.available)
+            fs.unlinkSync(path)
+            const pipeline = redis.pipeline()
+            pipeline.ltrim(lastRawKey, 0, -2)
+            pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
+            pipeline.hincrby(statsKey, totalmediasize, size)
+            await pipeline.exec()
+          } else {
+            healthcare.playing = false
+          }
+        }
+      }
     }
   })
 
