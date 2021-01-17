@@ -13,14 +13,16 @@ const zigotopanel = new Map()
 const zygote = ({ leftover }) => {
   if (!zigotopanel.has(leftover.shard)) {
     let attempts = 0
+    const WA = new WAConnection()
+    WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
+
     const timeoutid = setTimeout(() => {
       WA.close()
       zigotopanel.delete(leftover.shard)
     }, 60000)
-    const WA = new WAConnection()
+
     zigotopanel.set(leftover.shard, { WA })
-    console.log(leftover)
-    WA.browserDescription = ['BROODERHEN', 'Chrome', '87']
+
     WA.on('qr', async qr => {
       attempts += 1
 
@@ -32,6 +34,7 @@ const zygote = ({ leftover }) => {
         body: JSON.stringify({ type: 'qr', qr, attempts })
       }).catch(() => {})
     })
+
     WA.on('credentials-updated', async auth => {
       console.log('credentials-updated')
       const creds = JSON.stringify({
@@ -45,6 +48,7 @@ const zygote = ({ leftover }) => {
       WA.creds = creds
       console.log(`creds=${creds}`)
     })
+
     WA.on('open', async () => {
       const foundShard = WA.user.jid.split('@s.whatsapp.net')[0]
       if (leftover.shard === foundShard) {
@@ -53,14 +57,16 @@ const zygote = ({ leftover }) => {
           WA.close()
           zigotopanel.delete(leftover.shard)
         }, 8000)
+
         await redis.set(mkcredskey(leftover.shard), WA.creds)
+
         const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
         await fetch(leftover.url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ type: 'jwt', jwt })
+          body: JSON.stringify({ type: 'jwt', jwt, userinfo: WA.user })
         }).catch(() => {})
       } else {
         await fetch(leftover.url, {
