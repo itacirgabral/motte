@@ -93,6 +93,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
             pipeline.ltrim(lastRawKey, 0, -2)
             pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
             pipeline.hincrby(statsKey, totalmediasize, size)
+            pipeline.hincrby(statsKey, totalsentmessage, 1)
             await pipeline.exec()
           } else {
             healthcare.playing = false
@@ -101,7 +102,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'audioMessage_v001') {
-        const { jid, path, filename, mimetype, size } = crumb
+        const { jid, path, mimetype, size } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -117,7 +118,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           console.error(error)
         }
         if (voicefile) {
-          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype, filename })
+          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype })
             .catch(() => {
               healthcare.playing = false
               return false
@@ -130,6 +131,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
             pipeline.ltrim(lastRawKey, 0, -2)
             pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
             pipeline.hincrby(statsKey, totalmediasize, size)
+            pipeline.hincrby(statsKey, totalsentmessage, 1)
             await pipeline.exec()
           } else {
             healthcare.playing = false
