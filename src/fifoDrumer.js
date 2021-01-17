@@ -118,7 +118,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           console.error(error)
         }
         if (voicefile) {
-          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype })
+          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype, ptt: true })
             .catch(() => {
               healthcare.playing = false
               return false
