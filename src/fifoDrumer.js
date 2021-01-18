@@ -1,4 +1,4 @@
-const { MessageType, Presence } = require('@adiwajshing/baileys')
+const { MessageType, Presence, Mimetype } = require('@adiwajshing/baileys')
 const fs = require('fs')
 const delay = require('./delay')
 /*
@@ -100,7 +100,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'locationMessage_v001') {
-        const { jid, description, latitude, longitude} = crumb
+        const { jid, description, latitude, longitude } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -188,7 +188,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           console.error(error)
         }
         if (voicefile) {
-          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype, ptt: true })
+          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype: Mimetype.ogg, ptt: true })
             .catch(() => {
               healthcare.playing = false
               return false
