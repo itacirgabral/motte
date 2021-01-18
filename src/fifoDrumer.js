@@ -32,6 +32,9 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       const rawBread = await redisB.brpoplpush(fifoRawKey, lastRawKey, 0)
       const { type, ...crumb } = JSON.parse(rawBread)
 
+      /*
+      ** oh my ugly ifs...
+      */
       if (type === 'textMessage_v001') {
         const { jid, msg } = crumb
         const delta = msg.length
@@ -39,11 +42,76 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
         const conn = await connP
 
+        await conn.chatRead(jid)
         await conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
 
         const timestampStart = Date.now()
         const bakedBread = await conn.sendMessage(jid, msg, MessageType.text)
+          .catch(() => {
+            healthcare.playing = false
+            return false
+          })
+
+        if (bakedBread) {
+          const timestampFinish = Date.now()
+          await conn.updatePresence(jid, Presence.available)
+          const deltatime = timestampFinish - timestampStart
+
+          const pipeline = redis.pipeline()
+          pipeline.ltrim(lastRawKey, 0, -2)
+          pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
+          pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
+          pipeline.hincrby(statsKey, totalsentmessage, 1)
+          await pipeline.exec()
+        }
+      }
+
+      if (type === 'contactMessage_v001') {
+        const { jid, name, whatsapp, organization } = crumb
+        const waittime = 300
+
+        const conn = await connP
+
+        await conn.chatRead(jid)
+        await conn.updatePresence(jid, Presence.composing)
+        await delay(waittime)
+
+        const timestampStart = Date.now()
+        const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nORG:${organization};\nTEL;type=CELL;type=VOICE;waid=${whatsapp}:${whatsapp}\nEND:VCARD`
+        const bakedBread = await conn.sendMessage(jid, { displayname: name, vcard }, MessageType.contact)
+          .catch(() => {
+            healthcare.playing = false
+            return false
+          })
+
+        if (bakedBread) {
+          const timestampFinish = Date.now()
+          await conn.updatePresence(jid, Presence.available)
+          const deltatime = timestampFinish - timestampStart
+
+          const pipeline = redis.pipeline()
+          pipeline.ltrim(lastRawKey, 0, -2)
+          pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
+          pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
+          pipeline.hincrby(statsKey, totalsentmessage, 1)
+          await pipeline.exec()
+        }
+      }
+
+      if (type === 'locationMessage_v001') {
+        const { jid, description, latitude, longitude} = crumb
+        const waittime = 300
+
+        const conn = await connP
+
+        await conn.chatRead(jid)
+        await conn.updatePresence(jid, Presence.composing)
+        await delay(waittime)
+
+        const timestampStart = Date.now()
+
+        const bakedBread = await conn.sendMessage(jid, { address: description, degreesLatitude: latitude, degreesLongitude: longitude }, MessageType.location)
           .catch(() => {
             healthcare.playing = false
             return false
@@ -69,6 +137,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
         const conn = await connP
 
+        await conn.chatRead(jid)
         await conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
 
@@ -107,6 +176,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
         const conn = await connP
 
+        await conn.chatRead(jid)
         await conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
 
@@ -145,6 +215,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
         const conn = await connP
 
+        await conn.chatRead(jid)
         await conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
 
