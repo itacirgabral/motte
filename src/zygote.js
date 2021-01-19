@@ -7,6 +7,7 @@ const jwtsecret = process.env.JWT_SECRET
 const redisConn = process.env.REDIS_CONN
 
 const mkcredskey = shard => `zap:${shard}:creds`
+const mkwebhookkey = shard => `zap:${shard}:webhook`
 const redis = new Redis(redisConn)
 const zigotopanel = new Map()
 
@@ -58,7 +59,10 @@ const zygote = ({ leftover }) => {
           zigotopanel.delete(leftover.shard)
         }, 8000)
 
-        await redis.set(mkcredskey(leftover.shard), WA.creds)
+        const pipeline = redis.pipeline()
+        pipeline.set(mkcredskey(leftover.shard), WA.creds)
+        pipeline.set(mkwebhookkey(leftover.shard), leftover.url)
+        await pipeline.exec()
 
         const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
         await fetch(leftover.url, {
