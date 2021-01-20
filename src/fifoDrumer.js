@@ -68,7 +68,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'contactMessage_v001') {
-        const { jid, name, whatsapp, organization } = crumb
+        const { jid, vcard } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -77,9 +77,10 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
         await conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
 
+        console.log('VCARD')
+        console.log(vcard)
         const timestampStart = Date.now()
-        const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nORG:${organization};\nTEL;type=CELL;type=VOICE;waid=${whatsapp}:${whatsapp}\nEND:VCARD`
-        const bakedBread = await conn.sendMessage(jid, { displayname: name, vcard }, MessageType.contact)
+        const bakedBread = await conn.sendMessage(jid, { vcard }, MessageType.contact)
           .catch(() => {
             healthcare.playing = false
             return false

@@ -45,7 +45,6 @@ const chatUpdate = ({ shard, redis, connP }) => {
       }
 
       let jsontosend
-      let vcard
       switch (type) {
         case 'textMessage':
           jsontosend = {
@@ -88,15 +87,12 @@ const chatUpdate = ({ shard, redis, connP }) => {
           console.log(JSON.stringify(jsontosend))
           break
         case 'contactMessage':
-          vcard = vcard = contact.vcard.split('\n').map(el => el.split(':'))
           jsontosend = {
             type,
             to,
             from,
             id,
-            name: vcard.find(el => el[0] === 'FN')[1],
-            organization: vcard.find(el => el[0] === 'ORG')[1],
-            whatsapp: vcard.find(el => el[0].slice(0, 3) === 'TEL')[0].split('waid=')[1]
+            vcard: contact.vcard
           }
           if (webhook) {
             fetch(webhook, {
