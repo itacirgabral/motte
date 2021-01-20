@@ -27,6 +27,7 @@ const zygote = ({ leftover }) => {
     WA.on('qr', async qr => {
       attempts += 1
 
+      console.log(`${leftover.shard} qr=${qr}`)
       await fetch(leftover.url, {
         method: 'POST',
         headers: {
@@ -46,8 +47,8 @@ const zygote = ({ leftover }) => {
         macKey: auth.macKey.toString('base64')
       })
 
-      WA.creds = creds
-      console.log(`creds=${creds}`)
+      redis.set(mkcredskey(leftover.shard), creds)
+      console.log(`${leftover.shard} creds=${creds}`)
     })
 
     WA.on('open', async () => {
@@ -57,14 +58,12 @@ const zygote = ({ leftover }) => {
           clearTimeout(timeoutid)
           WA.close()
           zigotopanel.delete(leftover.shard)
-        }, 8000)
+        }, 6000)
 
-        const pipeline = redis.pipeline()
-        pipeline.set(mkcredskey(leftover.shard), WA.creds)
-        pipeline.set(mkwebhookkey(leftover.shard), leftover.url)
-        await pipeline.exec()
+        redis.set(mkwebhookkey(leftover.shard), leftover.url)
 
         const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
+        console.log(`${leftover.shard} jwt=${jwt}`)
         await fetch(leftover.url, {
           method: 'POST',
           headers: {
@@ -73,6 +72,8 @@ const zygote = ({ leftover }) => {
           body: JSON.stringify({ type: 'jwt', jwt, userinfo: WA.user })
         }).catch(() => {})
       } else {
+        console.log(`${leftover.shard} !== ${foundShard}`)
+        await redis.del(mkcredskey(leftover.shard))
         await fetch(leftover.url, {
           method: 'POST',
           headers: {
