@@ -8,6 +8,7 @@ const messageStatusUpdate = ({ shard, redis, connP }) => {
   const logKey = `zap:${shard}:log`
   const newsKey = `zap:${shard}:news`
   const webhookkey = `zap:${shard}:webhook`
+  const markkey = `zap:${shard}:mark`
 
   const types = {
     2: 'sent',
@@ -22,6 +23,10 @@ const messageStatusUpdate = ({ shard, redis, connP }) => {
     pipeline.ltrim(logKey, 0, 99)// 1
     pipeline.publish(newsKey, json)// 2
     pipeline.get(webhookkey)// 3
+
+    message.ids.forEach(id => {
+      pipeline.hget(markkey, id)
+    })
     const result = await pipeline.exec()
 
     const to = message.to.split('@s.whatsapp.net')[0]
@@ -31,27 +36,27 @@ const messageStatusUpdate = ({ shard, redis, connP }) => {
       const type = types[message.type]
 
       const webhook = result[3][1]
-      message.ids.forEach(id => {
-        const statusUpdate = {
-          type,
-          timestamp: timestamp.getTime(),
-          to,
-          from,
-          id
-        }
+      message.ids.forEach((_id, idx) => {
+        const mark = result[4 + idx][1]
+        if (mark) {
+          const statusUpdate = {
+            type,
+            timestamp: timestamp.getTime(),
+            to,
+            from,
+            mark
+          }
 
-        if (webhook) {
-          fetch(webhook, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(statusUpdate)
-          }).catch(() => {})
+          if (webhook) {
+            fetch(webhook, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(statusUpdate)
+            }).catch(() => {})
+          }
         }
-
-        console.log('STATUS UPDATE')
-        console.log(JSON.stringify(statusUpdate))
       })
     }
   }

@@ -7,6 +7,7 @@ const fetch = require('node-fetch')
 const chatUpdate = ({ shard, redis, connP }) => {
   const logKey = `zap:${shard}:log`
   const newsKey = `zap:${shard}:news`
+  const markkey = `zap:${shard}:mark`
   const webhookkey = `zap:${shard}:webhook`
 
   return async (chat) => {
@@ -16,12 +17,16 @@ const chatUpdate = ({ shard, redis, connP }) => {
     pipeline.ltrim(logKey, 0, 99)
     pipeline.publish(newsKey, json)
     pipeline.get(webhookkey)// 3
+
+    const id = chat?.messages?.array[0]?.key?.id
+    if (id) {
+      pipeline.hget(markkey, id)// 4
+    }
     const result = await pipeline.exec()
 
     const number = chat.jid.split('@s.whatsapp.net')[0]
     const webhook = result[3][1]
 
-    // notificar mensagem de texto recebida
     if (
       number.indexOf('-') === -1 && // Não é um grupo
       !chat.presences && // não é uma presença
@@ -51,7 +56,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
             type,
             to,
             from,
-            id,
+            mark: id,
             msg
           }
           if (webhook) {
@@ -63,14 +68,13 @@ const chatUpdate = ({ shard, redis, connP }) => {
               body: JSON.stringify(jsontosend)
             }).catch(() => {})
           }
-          console.log(JSON.stringify(jsontosend))
           break
         case 'locationMessage':
           jsontosend = {
             type,
             to,
             from,
-            id,
+            mark: id,
             description: location.address,
             latitude: location.degreesLatitude,
             longitude: location.degreesLongitude
@@ -84,14 +88,13 @@ const chatUpdate = ({ shard, redis, connP }) => {
               body: JSON.stringify(jsontosend)
             }).catch(() => {})
           }
-          console.log(JSON.stringify(jsontosend))
           break
         case 'contactMessage':
           jsontosend = {
             type,
             to,
             from,
-            id,
+            mark: id,
             vcard: contact.vcard
           }
           if (webhook) {
@@ -103,7 +106,6 @@ const chatUpdate = ({ shard, redis, connP }) => {
               body: JSON.stringify(jsontosend)
             }).catch(() => {})
           }
-          console.log(JSON.stringify(jsontosend))
           break
       }
     }
@@ -122,6 +124,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
       const to = number
       const from = shard
       const id = message.key.id
+      const mark = await redis.hget(markkey, id)
 
       if (webhook) {
         fetch(webhook, {
@@ -134,19 +137,10 @@ const chatUpdate = ({ shard, redis, connP }) => {
             timestamp: Date.now(),
             to,
             from,
-            id
+            mark
           })
         }).catch(() => {})
       }
-
-      console.log('SEND TO WEBHOOK')
-      console.log(JSON.stringify({
-        type: 'sent',
-        timestamp: Date.now(),
-        to,
-        from,
-        id
-      }))
     }
   }
 }

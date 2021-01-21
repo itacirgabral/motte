@@ -13,6 +13,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
   const lastRawKey = `zap:${shard}:last:rawBread`
 
   const statsKey = `zap:${shard}:stats`
+  const markkey = `zap:${shard}:mark`
   const lastsentmessagetimestamp = 'lastsentmessagetimestamp'
   const lastdeltatimemessage = 'lastdeltatimemessage'
   const totalsentmessage = 'totalsentmessage'
@@ -36,7 +37,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       ** oh my ugly ifs...
       */
       if (type === 'textMessage_v001') {
-        const { jid, msg } = crumb
+        const { jid, msg, mark } = crumb
         const delta = msg.length
         const waittime = delta > 50 ? 6000 : delta * 100 + 100
 
@@ -54,12 +55,14 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           })
 
         if (bakedBread) {
+          const messageid = bakedBread.key.id
           const timestampFinish = Date.now()
           await conn.updatePresence(jid, Presence.available)
           const deltatime = timestampFinish - timestampStart
 
           const pipeline = redis.pipeline()
           pipeline.ltrim(lastRawKey, 0, -2)
+          pipeline.hset(markkey, messageid, mark)
           pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
           pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
           pipeline.hincrby(statsKey, totalsentmessage, 1)
@@ -68,7 +71,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'contactMessage_v001') {
-        const { jid, vcard } = crumb
+        const { jid, vcard, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -77,8 +80,6 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
         await conn.updatePresence(jid, Presence.composing)
         await delay(waittime)
 
-        console.log('VCARD')
-        console.log(vcard)
         const timestampStart = Date.now()
         const bakedBread = await conn.sendMessage(jid, { vcard }, MessageType.contact)
           .catch(() => {
@@ -87,12 +88,14 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           })
 
         if (bakedBread) {
+          const messageid = bakedBread.key.id
           const timestampFinish = Date.now()
           await conn.updatePresence(jid, Presence.available)
           const deltatime = timestampFinish - timestampStart
 
           const pipeline = redis.pipeline()
           pipeline.ltrim(lastRawKey, 0, -2)
+          pipeline.hset(markkey, messageid, mark)
           pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
           pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
           pipeline.hincrby(statsKey, totalsentmessage, 1)
@@ -101,7 +104,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'locationMessage_v001') {
-        const { jid, description, latitude, longitude } = crumb
+        const { jid, description, latitude, longitude, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -119,12 +122,14 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           })
 
         if (bakedBread) {
+          const messageid = bakedBread.key.id
           const timestampFinish = Date.now()
           await conn.updatePresence(jid, Presence.available)
           const deltatime = timestampFinish - timestampStart
 
           const pipeline = redis.pipeline()
           pipeline.ltrim(lastRawKey, 0, -2)
+          pipeline.hset(markkey, messageid, mark)
           pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
           pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
           pipeline.hincrby(statsKey, totalsentmessage, 1)
@@ -133,7 +138,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'documentMessage_v001') {
-        const { jid, path, filename, mimetype, size } = crumb
+        const { jid, path, filename, mimetype, size, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -156,11 +161,13 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
               return false
             })
           if (bakedBread) {
+            const messageid = bakedBread.key.id
             const timestampFinish = Date.now()
             await conn.updatePresence(jid, Presence.available)
             fs.unlinkSync(path)
             const pipeline = redis.pipeline()
             pipeline.ltrim(lastRawKey, 0, -2)
+            pipeline.hset(markkey, messageid, mark)
             pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
             pipeline.hincrby(statsKey, totalmediasize, size)
             pipeline.hincrby(statsKey, totalsentmessage, 1)
@@ -172,7 +179,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'audioMessage_v001') {
-        const { jid, path, mimetype, size } = crumb
+        const { jid, path, size, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -195,11 +202,13 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
               return false
             })
           if (bakedBread) {
+            const messageid = bakedBread.key.id
             const timestampFinish = Date.now()
             await conn.updatePresence(jid, Presence.available)
             fs.unlinkSync(path)
             const pipeline = redis.pipeline()
             pipeline.ltrim(lastRawKey, 0, -2)
+            pipeline.hset(markkey, messageid, mark)
             pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
             pipeline.hincrby(statsKey, totalmediasize, size)
             pipeline.hincrby(statsKey, totalsentmessage, 1)
@@ -211,7 +220,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'imageMessage_v001') {
-        const { jid, path, filename, mimetype, size } = crumb
+        const { jid, path, filename, mimetype, size, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -234,11 +243,13 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
               return false
             })
           if (bakedBread) {
+            const messageid = bakedBread.key.id
             const timestampFinish = Date.now()
             await conn.updatePresence(jid, Presence.available)
             fs.unlinkSync(path)
             const pipeline = redis.pipeline()
             pipeline.ltrim(lastRawKey, 0, -2)
+            pipeline.hset(markkey, messageid, mark)
             pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
             pipeline.hincrby(statsKey, totalmediasize, size)
             await pipeline.exec()
