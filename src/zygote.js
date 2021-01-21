@@ -20,7 +20,7 @@ const zygote = ({ leftover }) => {
     const timeoutid = setTimeout(() => {
       WA.close()
       zigotopanel.delete(leftover.shard)
-    }, 60000)
+    }, 100000)
 
     zigotopanel.set(leftover.shard, { WA })
 
@@ -53,24 +53,29 @@ const zygote = ({ leftover }) => {
 
     WA.on('open', async () => {
       const foundShard = WA.user.jid.split('@s.whatsapp.net')[0]
+      const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
+
       if (leftover.shard === foundShard) {
+        await redis.set(mkwebhookkey(leftover.shard), leftover.url)
+        console.log(`${leftover.shard} jwt=${jwt}`)
+
         setTimeout(async () => {
           clearTimeout(timeoutid)
           WA.close()
           zigotopanel.delete(leftover.shard)
+          const userinfo = {
+            number: foundShard,
+            name: WA.user.name,
+            avatar: WA.user.imgUrl
+          }
+          await fetch(leftover.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: 'jwt', jwt, userinfo })
+          }).catch(() => {})
         }, 6000)
-
-        redis.set(mkwebhookkey(leftover.shard), leftover.url)
-
-        const jwt = jsonwebtoken.sign(leftover.shard, jwtsecret)
-        console.log(`${leftover.shard} jwt=${jwt}`)
-        await fetch(leftover.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ type: 'jwt', jwt, userinfo: WA.user })
-        }).catch(() => {})
       } else {
         console.log(`${leftover.shard} !== ${foundShard}`)
         await redis.del(mkcredskey(leftover.shard))
