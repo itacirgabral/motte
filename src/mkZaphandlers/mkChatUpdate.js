@@ -1,4 +1,6 @@
 const fetch = require('node-fetch')
+const FormData = require('form-data')
+const fs = require('fs')
 
 /**
  *  when a chat is updated (new message, updated message, deleted, pinned, presence updated etc)
@@ -39,6 +41,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
       const msg = message.message.conversation
       const location = message.message.locationMessage
       const contact = message.message.contactMessage
+      const image = message.message.imageMessage
+      const document = message.message.documentMessage
+      const audio = message.message.audioMessage
 
       let type
       if (msg) {
@@ -47,19 +52,24 @@ const chatUpdate = ({ shard, redis, connP }) => {
         type = 'contactMessage'
       } else if (location) {
         type = 'locationMessage'
+      } else if (image) {
+        type = 'imageMessage'
+      } else if (document) {
+        type = 'documentMessage'
+      } else if (audio) {
+        type = 'audioMessage'
       }
 
-      let jsontosend
       switch (type) {
         case 'textMessage':
-          jsontosend = {
-            type,
-            to,
-            from,
-            mark: id,
-            msg
-          }
           if (webhook) {
+            const jsontosend = {
+              type,
+              to,
+              from,
+              msg,
+              mark: id
+            }
             fetch(webhook, {
               method: 'POST',
               headers: {
@@ -70,16 +80,16 @@ const chatUpdate = ({ shard, redis, connP }) => {
           }
           break
         case 'locationMessage':
-          jsontosend = {
-            type,
-            to,
-            from,
-            mark: id,
-            description: location.address,
-            latitude: location.degreesLatitude,
-            longitude: location.degreesLongitude
-          }
           if (webhook) {
+            const jsontosend = {
+              type,
+              to,
+              from,
+              mark: id,
+              description: location.address,
+              latitude: location.degreesLatitude,
+              longitude: location.degreesLongitude
+            }
             fetch(webhook, {
               method: 'POST',
               headers: {
@@ -90,14 +100,14 @@ const chatUpdate = ({ shard, redis, connP }) => {
           }
           break
         case 'contactMessage':
-          jsontosend = {
-            type,
-            to,
-            from,
-            mark: id,
-            vcard: contact.vcard
-          }
           if (webhook) {
+            const jsontosend = {
+              type,
+              to,
+              from,
+              vcard: contact.vcard,
+              mark: id
+            }
             fetch(webhook, {
               method: 'POST',
               headers: {
@@ -106,6 +116,77 @@ const chatUpdate = ({ shard, redis, connP }) => {
               body: JSON.stringify(jsontosend)
             }).catch(() => {})
           }
+          break
+        case 'imageMessage':
+          if (webhook) {
+            const url = new URL(webhook)
+            url.searchParams.append('type', type)
+            url.searchParams.append('to', to)
+            url.searchParams.append('from', from)
+            url.searchParams.append('mimetype', image.mimetype)
+            url.searchParams.append('size', image.fileLength)
+            url.searchParams.append('mark', id)
+
+            const conn = await connP
+            const file = await conn.downloadAndSaveMediaMessage(message, `../uploads/${Date.now()}`)
+            const form = new FormData()
+            form.append('image', fs.createReadStream(file))
+
+            await fetch(url.href, {
+              method: 'POST', body: form
+            }).catch(() => {})
+
+            fs.unlinkSync(file)
+          }
+          break
+        case 'documentMessage':
+          if (webhook) {
+            const url = new URL(webhook)
+            url.searchParams.append('type', type)
+            url.searchParams.append('to', to)
+            url.searchParams.append('from', from)
+            url.searchParams.append('filename', document.fileName)
+            url.searchParams.append('mimetype', document.mimetype)
+            url.searchParams.append('size', document.fileLength)
+            url.searchParams.append('mark', id)
+
+            const conn = await connP
+            const file = await conn.downloadAndSaveMediaMessage(message, `../uploads/${Date.now()}`)
+            const form = new FormData()
+            form.append('document', fs.createReadStream(file))
+
+            await fetch(url.href, {
+              method: 'POST', body: form
+            }).catch(() => {})
+
+            fs.unlinkSync(file)
+          }
+          break
+        case 'audioMessage':
+          if (webhook) {
+            const url = new URL(webhook)
+            url.searchParams.append('type', type)
+            url.searchParams.append('to', to)
+            url.searchParams.append('from', from)
+            url.searchParams.append('seconds', audio.seconds)
+            url.searchParams.append('mimetype', audio.mimetype)
+            url.searchParams.append('size', audio.fileLength)
+            url.searchParams.append('mark', id)
+
+            const conn = await connP
+            const file = await conn.downloadAndSaveMediaMessage(message, `../uploads/${Date.now()}`)
+            const form = new FormData()
+            form.append('audio', fs.createReadStream(file))
+
+            await fetch(url.href, {
+              method: 'POST', body: form
+            }).catch(() => {})
+
+            fs.unlinkSync(file)
+          }
+          break
+        default:
+          console.log(JSON.stringify(message, null, 2))
           break
       }
     }
