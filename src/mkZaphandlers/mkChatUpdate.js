@@ -68,7 +68,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               to,
               from,
               msg,
-              mark: id
+              wid: id
             }
             fetch(webhook, {
               method: 'POST',
@@ -85,7 +85,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               type,
               to,
               from,
-              mark: id,
+              wid: id,
               description: location.address,
               latitude: location.degreesLatitude,
               longitude: location.degreesLongitude
@@ -106,7 +106,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               to,
               from,
               vcard: contact.vcard,
-              mark: id
+              wid: id
             }
             fetch(webhook, {
               method: 'POST',
@@ -125,7 +125,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('from', from)
             url.searchParams.append('mimetype', image.mimetype)
             url.searchParams.append('size', image.fileLength)
-            url.searchParams.append('mark', id)
+            url.searchParams.append('wid', id)
 
             const conn = await connP
             const file = await conn.downloadAndSaveMediaMessage(message, `../uploads/${Date.now()}`)
@@ -148,7 +148,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('filename', document.fileName)
             url.searchParams.append('mimetype', document.mimetype)
             url.searchParams.append('size', document.fileLength)
-            url.searchParams.append('mark', id)
+            url.searchParams.append('wid', id)
 
             const conn = await connP
             const file = await conn.downloadAndSaveMediaMessage(message, `../uploads/${Date.now()}`)
@@ -171,7 +171,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('seconds', audio.seconds)
             url.searchParams.append('mimetype', audio.mimetype)
             url.searchParams.append('size', audio.fileLength)
-            url.searchParams.append('mark', id)
+            url.searchParams.append('wid', id)
 
             const conn = await connP
             const file = await conn.downloadAndSaveMediaMessage(message, `../uploads/${Date.now()}`)
@@ -218,6 +218,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
             timestamp: Date.now(),
             to,
             from,
+            wid: id,
             mark
           })
         }).catch(() => {})

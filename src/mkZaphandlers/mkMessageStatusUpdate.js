@@ -36,7 +36,7 @@ const messageStatusUpdate = ({ shard, redis, connP }) => {
       const type = types[message.type]
 
       const webhook = result[3][1]
-      message.ids.forEach((_id, idx) => {
+      message.ids.forEach((id, idx) => {
         const mark = result[4 + idx][1]
         if (mark) {
           const statusUpdate = {
@@ -44,6 +44,7 @@ const messageStatusUpdate = ({ shard, redis, connP }) => {
             timestamp: timestamp.getTime(),
             to,
             from,
+            wid: id,
             mark
           }
 
