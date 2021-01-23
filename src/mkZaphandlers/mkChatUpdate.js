@@ -186,7 +186,8 @@ const chatUpdate = ({ shard, redis, connP }) => {
           }
           break
         default:
-          console.log(JSON.stringify(message, null, 2))
+          console.log('chat-update switch default')
+          console.dir(message)
           break
       }
     }

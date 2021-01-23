@@ -28,6 +28,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
   process.nextTick(async () => {
     const pea = await redis.llen(lastRawKey)
     healthcare.playing = healthcare.playing || pea === 0
+    let forwardBuffer = {}
 
     while (healthcare.playing) {
       const rawBread = await redisB.brpoplpush(fifoRawKey, lastRawKey, 0)
@@ -134,6 +135,50 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
           pipeline.hincrby(statsKey, totalsentmessage, 1)
           await pipeline.exec()
+        }
+      }
+
+      if (type === 'forwardMessage_v001') {
+        const { jid, source, wid, mark } = crumb
+        const waittime = 300 * (1 + Math.random())
+
+        const conn = await connP
+
+        await conn.chatRead(jid)
+        await conn.updatePresence(jid, Presence.composing)
+        await delay(waittime)
+
+        let m
+        if (forwardBuffer.wid === wid) {
+          m = forwardBuffer.message
+        } else {
+          m = await conn.loadMessage(source, wid)
+          forwardBuffer.message = m
+          forwardBuffer.wid = wid
+        }
+
+        if (m) {
+          const timestampStart = Date.now()
+          const bakedBread = await conn.forwardMessage(jid, m)
+            .catch(() => {
+              healthcare.playing = false
+              return false
+            })
+          if (bakedBread) {
+            const messageid = bakedBread.key.id
+            const timestampFinish = Date.now()
+            await conn.updatePresence(jid, Presence.available)
+            const deltatime = timestampFinish - timestampStart
+            const pipeline = redis.pipeline()
+            pipeline.ltrim(lastRawKey, 0, -2)
+            pipeline.hset(markkey, messageid, mark)
+            pipeline.hset(statsKey, lastsentmessagetimestamp, timestampFinish)
+            pipeline.hset(statsKey, lastdeltatimemessage, deltatime)
+            pipeline.hincrby(statsKey, totalsentmessage, 1)
+            await pipeline.exec()
+          } else {
+            await redis.hincrby(statsKey, totalsentmessage, 1)
+          }
         }
       }
 
