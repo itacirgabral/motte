@@ -38,26 +38,49 @@ const chatUpdate = ({ shard, redis, connP }) => {
       const to = shard
       const from = number
       const id = message.key.id
-      const msg = message.message.conversation
+
+      let msg = message.message.conversation
       const location = message.message.locationMessage
       const contact = message.message.contactMessage
       const image = message.message.imageMessage
       const document = message.message.documentMessage
       const audio = message.message.audioMessage
+      const quoteMsg = message.message.extendedTextMessage
 
       let type
+      let isQuoted = false
+      let isForwarded = false
       if (msg) {
         type = 'textMessage'
+      } else if (quoteMsg) {
+        type = 'textMessage'
+        isQuoted = true
+        msg = quoteMsg.text
       } else if (contact) {
         type = 'contactMessage'
+        if (contact?.contextInfo?.stanzaId) {
+          isQuoted = true
+        }
       } else if (location) {
         type = 'locationMessage'
+        if (location?.contextInfo?.stanzaId) {
+          isQuoted = true
+        }
       } else if (image) {
         type = 'imageMessage'
+        if (image?.contextInfo?.stanzaId) {
+          isQuoted = true
+        }
       } else if (document) {
         type = 'documentMessage'
+        if (document?.contextInfo?.stanzaId) {
+          isQuoted = true
+        }
       } else if (audio) {
         type = 'audioMessage'
+        if (audio?.contextInfo?.stanzaId) {
+          isQuoted = true
+        }
       }
 
       switch (type) {
@@ -68,6 +91,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               to,
               from,
               msg,
+              quoted: isQuoted ? quoteMsg.contextInfo.stanzaId : undefined,
               wid: id
             }
             fetch(webhook, {
@@ -85,6 +109,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               type,
               to,
               from,
+              quoted: isQuoted ? location.contextInfo.stanzaId : undefined,
               wid: id,
               description: location.address,
               latitude: location.degreesLatitude,
@@ -105,6 +130,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               type,
               to,
               from,
+              quoted: isQuoted ? contact.contextInfo.stanzaId : undefined,
               vcard: contact.vcard,
               wid: id
             }
@@ -123,6 +149,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('type', type)
             url.searchParams.append('to', to)
             url.searchParams.append('from', from)
+            if (isQuoted) {
+              url.searchParams.append('quoted', image.contextInfo.stanzaId)
+            }
             url.searchParams.append('mimetype', image.mimetype)
             url.searchParams.append('size', image.fileLength)
             url.searchParams.append('wid', id)
@@ -145,6 +174,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('type', type)
             url.searchParams.append('to', to)
             url.searchParams.append('from', from)
+            if (isQuoted) {
+              url.searchParams.append('quoted', document.contextInfo.stanzaId)
+            }
             url.searchParams.append('filename', document.fileName)
             url.searchParams.append('mimetype', document.mimetype)
             url.searchParams.append('size', document.fileLength)
@@ -168,6 +200,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('type', type)
             url.searchParams.append('to', to)
             url.searchParams.append('from', from)
+            if (isQuoted) {
+              url.searchParams.append('quoted', audio.contextInfo.stanzaId)
+            }
             url.searchParams.append('seconds', audio.seconds)
             url.searchParams.append('mimetype', audio.mimetype)
             url.searchParams.append('size', audio.fileLength)
