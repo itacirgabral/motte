@@ -28,7 +28,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
   process.nextTick(async () => {
     const pea = await redis.llen(lastRawKey)
     healthcare.playing = healthcare.playing || pea === 0
-    let forwardBuffer = {}
+    const forwardBuffer = {}
 
     while (healthcare.playing) {
       const rawBread = await redisB.brpoplpush(fifoRawKey, lastRawKey, 0)
@@ -38,7 +38,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       ** oh my ugly ifs...
       */
       if (type === 'textMessage_v001') {
-        const { jid, msg, mark } = crumb
+        const { jid, quote, msg, mark } = crumb
         const delta = msg.length
         const waittime = delta > 50 ? 6000 : delta * 100 + 100
 
@@ -49,11 +49,23 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
         await delay(waittime)
 
         const timestampStart = Date.now()
-        const bakedBread = await conn.sendMessage(jid, msg, MessageType.text)
-          .catch(() => {
-            healthcare.playing = false
-            return false
-          })
+
+        let quotedmessage
+        if (quote) {
+          quotedmessage = await conn.loadMessage(jid, quote)
+        }
+
+        let bakedBread
+        if (quote && !quotedmessage) {
+          bakedBread = false
+          await redis.hincrby(statsKey, totalsentmessage, 1)
+        } else {
+          bakedBread = await conn.sendMessage(jid, msg, MessageType.text, { quoted: quotedmessage })
+            .catch(() => {
+              healthcare.playing = false
+              return false
+            })
+        }
 
         if (bakedBread) {
           const messageid = bakedBread.key.id
@@ -72,7 +84,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'contactMessage_v001') {
-        const { jid, vcard, mark } = crumb
+        const { jid, quote, vcard, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -82,11 +94,23 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
         await delay(waittime)
 
         const timestampStart = Date.now()
-        const bakedBread = await conn.sendMessage(jid, { vcard }, MessageType.contact)
-          .catch(() => {
-            healthcare.playing = false
-            return false
-          })
+
+        let quotedmessage
+        if (quote) {
+          quotedmessage = await conn.loadMessage(jid, quote)
+        }
+
+        let bakedBread
+        if (quote && !quotedmessage) {
+          bakedBread = false
+          await redis.hincrby(statsKey, totalsentmessage, 1)
+        } else {
+          bakedBread = await conn.sendMessage(jid, { vcard }, MessageType.contact, { quoted: quotedmessage })
+            .catch(() => {
+              healthcare.playing = false
+              return false
+            })
+        }
 
         if (bakedBread) {
           const messageid = bakedBread.key.id
@@ -105,7 +129,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'locationMessage_v001') {
-        const { jid, description, latitude, longitude, mark } = crumb
+        const { jid, quote, description, latitude, longitude, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -116,11 +140,22 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
 
         const timestampStart = Date.now()
 
-        const bakedBread = await conn.sendMessage(jid, { address: description, degreesLatitude: latitude, degreesLongitude: longitude }, MessageType.location)
-          .catch(() => {
-            healthcare.playing = false
-            return false
-          })
+        let quotedmessage
+        if (quote) {
+          quotedmessage = await conn.loadMessage(jid, quote)
+        }
+
+        let bakedBread
+        if (quote && !quotedmessage) {
+          bakedBread = false
+          await redis.hincrby(statsKey, totalsentmessage, 1)
+        } else {
+          bakedBread = await conn.sendMessage(jid, { address: description, degreesLatitude: latitude, degreesLongitude: longitude }, MessageType.location, { quoted: quotedmessage })
+            .catch(() => {
+              healthcare.playing = false
+              return false
+            })
+        }
 
         if (bakedBread) {
           const messageid = bakedBread.key.id
@@ -183,7 +218,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'documentMessage_v001') {
-        const { jid, path, filename, mimetype, size, mark } = crumb
+        const { jid, quote, path, filename, mimetype, size, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -200,11 +235,23 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           console.error(error)
         }
         if (docfile) {
-          const bakedBread = await conn.sendMessage(jid, docfile, MessageType.document, { mimetype, filename })
-            .catch(() => {
-              healthcare.playing = false
-              return false
-            })
+          let quotedmessage
+          if (quote) {
+            quotedmessage = await conn.loadMessage(jid, quote)
+          }
+
+          let bakedBread
+          if (quote && !quotedmessage) {
+            bakedBread = false
+            await redis.hincrby(statsKey, totalsentmessage, 1)
+          } else {
+            bakedBread = await conn.sendMessage(jid, docfile, MessageType.document, { mimetype, filename, quoted: quotedmessage })
+              .catch(() => {
+                healthcare.playing = false
+                return false
+              })
+          }
+
           if (bakedBread) {
             const messageid = bakedBread.key.id
             const timestampFinish = Date.now()
@@ -224,7 +271,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'audioMessage_v001') {
-        const { jid, path, size, mark } = crumb
+        const { jid, quote, path, size, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -241,11 +288,23 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           console.error(error)
         }
         if (voicefile) {
-          const bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype: Mimetype.ogg, ptt: true })
-            .catch(() => {
-              healthcare.playing = false
-              return false
-            })
+          let quotedmessage
+          if (quote) {
+            quotedmessage = await conn.loadMessage(jid, quote)
+          }
+
+          let bakedBread
+          if (quote && !quotedmessage) {
+            bakedBread = false
+            await redis.hincrby(statsKey, totalsentmessage, 1)
+          } else {
+            bakedBread = await conn.sendMessage(jid, voicefile, MessageType.audio, { mimetype: Mimetype.ogg, ptt: true, quoted: quotedmessage })
+              .catch(() => {
+                healthcare.playing = false
+                return false
+              })
+          }
+
           if (bakedBread) {
             const messageid = bakedBread.key.id
             const timestampFinish = Date.now()
@@ -265,7 +324,7 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
       }
 
       if (type === 'imageMessage_v001') {
-        const { jid, path, filename, mimetype, size, mark } = crumb
+        const { jid, quote, path, filename, mimetype, size, mark } = crumb
         const waittime = 300
 
         const conn = await connP
@@ -282,11 +341,23 @@ const fifoDrumer = ({ shard, redis, connP, redisB }) => {
           console.error(error)
         }
         if (imgfile) {
-          const bakedBread = await conn.sendMessage(jid, imgfile, MessageType.image, { mimetype, filename })
-            .catch(() => {
-              healthcare.playing = false
-              return false
-            })
+          let quotedmessage
+          if (quote) {
+            quotedmessage = await conn.loadMessage(jid, quote)
+          }
+
+          let bakedBread
+          if (quote && !quotedmessage) {
+            bakedBread = false
+            await redis.hincrby(statsKey, totalsentmessage, 1)
+          } else {
+            bakedBread = await conn.sendMessage(jid, imgfile, MessageType.image, { mimetype, filename, quoted: quotedmessage })
+              .catch(() => {
+                healthcare.playing = false
+                return false
+              })
+          }
+
           if (bakedBread) {
             const messageid = bakedBread.key.id
             const timestampFinish = Date.now()
