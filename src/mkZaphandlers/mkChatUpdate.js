@@ -255,8 +255,6 @@ const chatUpdate = ({ shard, redis, connP }) => {
         default:
           console.log('chat-update switch default')
           console.dir(message)
-          console.log('contextInfo')
-          console.dir(message.message.extendedTextMessage.contextInfo.isForwarded)
           break
       }
     }
