@@ -54,30 +54,50 @@ const chatUpdate = ({ shard, redis, connP }) => {
         type = 'textMessage'
       } else if (quoteMsg) {
         type = 'textMessage'
-        isQuoted = true
         msg = quoteMsg.text
+        if (quoteMsg.contextInfo?.isForwarded) {
+          isForwarded = true
+        }
+        if (quoteMsg.contextInfo?.stanzaId) {
+          isQuoted = true
+        }
       } else if (contact) {
         type = 'contactMessage'
+        if (contact?.contextInfo?.isForwarded) {
+          isForwarded = true
+        }
         if (contact?.contextInfo?.stanzaId) {
           isQuoted = true
         }
       } else if (location) {
         type = 'locationMessage'
+        if (location?.contextInfo?.isForwarded) {
+          isForwarded = true
+        }
         if (location?.contextInfo?.stanzaId) {
           isQuoted = true
         }
       } else if (image) {
         type = 'imageMessage'
+        if (image?.contextInfo?.isForwarded) {
+          isForwarded = true
+        }
         if (image?.contextInfo?.stanzaId) {
           isQuoted = true
         }
       } else if (document) {
         type = 'documentMessage'
+        if (document?.contextInfo?.isForwarded) {
+          isForwarded = true
+        }
         if (document?.contextInfo?.stanzaId) {
           isQuoted = true
         }
       } else if (audio) {
         type = 'audioMessage'
+        if (audio?.contextInfo?.isForwarded) {
+          isForwarded = true
+        }
         if (audio?.contextInfo?.stanzaId) {
           isQuoted = true
         }
@@ -91,6 +111,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               to,
               from,
               msg,
+              forwarded: isForwarded ? true : undefined,
               quoted: isQuoted ? quoteMsg.contextInfo.stanzaId : undefined,
               wid: id
             }
@@ -109,6 +130,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               type,
               to,
               from,
+              forwarded: isForwarded ? true : undefined,
               quoted: isQuoted ? location.contextInfo.stanzaId : undefined,
               wid: id,
               description: location.address,
@@ -130,6 +152,7 @@ const chatUpdate = ({ shard, redis, connP }) => {
               type,
               to,
               from,
+              forwarded: isForwarded ? true : undefined,
               quoted: isQuoted ? contact.contextInfo.stanzaId : undefined,
               vcard: contact.vcard,
               wid: id
@@ -149,6 +172,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('type', type)
             url.searchParams.append('to', to)
             url.searchParams.append('from', from)
+            if (isForwarded) {
+              url.searchParams.append('forwarded', 'true')
+            }
             if (isQuoted) {
               url.searchParams.append('quoted', image.contextInfo.stanzaId)
             }
@@ -174,6 +200,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('type', type)
             url.searchParams.append('to', to)
             url.searchParams.append('from', from)
+            if (isForwarded) {
+              url.searchParams.append('forwarded', 'true')
+            }
             if (isQuoted) {
               url.searchParams.append('quoted', document.contextInfo.stanzaId)
             }
@@ -200,6 +229,9 @@ const chatUpdate = ({ shard, redis, connP }) => {
             url.searchParams.append('type', type)
             url.searchParams.append('to', to)
             url.searchParams.append('from', from)
+            if (isForwarded) {
+              url.searchParams.append('forwarded', 'true')
+            }
             if (isQuoted) {
               url.searchParams.append('quoted', audio.contextInfo.stanzaId)
             }
@@ -223,6 +255,8 @@ const chatUpdate = ({ shard, redis, connP }) => {
         default:
           console.log('chat-update switch default')
           console.dir(message)
+          console.log('contextInfo')
+          console.dir(message.message.extendedTextMessage.contextInfo.isForwarded)
           break
       }
     }
